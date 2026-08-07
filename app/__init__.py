@@ -1,12 +1,16 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 from config.config import config
 import logging
 import os
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.login_message = 'Please log in to access this page.'
 
 def create_app(config_name='development'):
     """Application factory pattern with error handling"""
@@ -16,6 +20,14 @@ def create_app(config_name='development'):
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
+    
+    # User loader for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        """Load user by ID for Flask-Login"""
+        from app.models import User
+        return User.query.get(int(user_id))
     
     # Configure logging
     if not app.debug:
@@ -30,7 +42,9 @@ def create_app(config_name='development'):
     
     # Register blueprints
     from app.controllers.main import main_bp
+    from app.controllers.auth import auth_bp
     app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     
     # Register error handlers
     register_error_handlers(app)

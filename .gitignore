@@ -52,8 +52,8 @@ Thumbs.db
 uploads/
 static/uploads/
 
-# Models
-models/
+# AI Models (root level only)
+/models/
 *.pth
 *.pt
 *.pkl

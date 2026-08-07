@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-circle display-1 text-primary"></i>
+                    </div>
+                    <h4 class="card-title">{{ user.full_name }}</h4>
+                    <p class="text-muted">@{{ user.username }}</p>
+                    <span class="badge bg-{{ 'primary' if user.role == 'doctor' else 'success' }}">
+                        {{ user.role|capitalize }}
+                    </span>
+                    <div class="mt-3">
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Full Name:</strong>
+                            <p class="text-muted">{{ user.full_name }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Email:</strong>
+                            <p class="text-muted">{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Phone:</strong>
+                            <p class="text-muted">{{ user.phone or 'Not provided' }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Age:</strong>
+                            <p class="text-muted">{{ user.age or 'Not provided' }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Gender:</strong>
+                            <p class="text-muted">{{ user.gender|capitalize if user.gender else 'Not provided' }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>District:</strong>
+                            <p class="text-muted">{{ user.district }}</p>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <strong>Address:</strong>
+                            <p class="text-muted">{{ user.address or 'Not provided' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <strong>Account Status:</strong>
+                            <p class="text-muted">
+                                <span class="badge bg-{{ 'success' if user.is_active else 'danger' }}">
+                                    {{ 'Active' if user.is_active else 'Inactive' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Member Since:</strong>
+                            <p class="text-muted">{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Last Updated:</strong>
+                            <p class="text-muted">{{ user.updated_at.strftime('%B %d, %Y') }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <strong>Total Predictions:</strong>
+                            <p class="text-muted">{{ user.predictions|length }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.predictions %}
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Recent Predictions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Result</th>
+                                    <th>Confidence</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in user.predictions[:5] %}
+                                <tr>
+                                    <td>{{ prediction.prediction_type|capitalize }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
+                                            {{ prediction.prediction_result|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
+                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

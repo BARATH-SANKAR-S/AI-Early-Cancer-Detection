@@ -9,6 +9,7 @@ A research-oriented healthcare web application leveraging artificial intelligenc
 - **Database**: SQLite with Flask-SQLAlchemy
 - **Database Migrations**: Flask-Migrate
 - **Form Handling**: Flask-WTF, WTForms
+- **Authentication**: Flask-Login, Werkzeug (password hashing)
 - **Environment Management**: python-dotenv
 - **AI/ML**: PyTorch, Hugging Face Transformers (to be added in later modules)
 - **Image Processing**: OpenCV, Pillow (to be added in later modules)
@@ -19,19 +20,27 @@ A research-oriented healthcare web application leveraging artificial intelligenc
 ```
 AI-Early-Cancer-Detection/
 ├── app/
-│   ├── __init__.py              # Application factory with error handling
+│   ├── __init__.py              # Application factory with error handling & Flask-Login
 │   ├── models/
 │   │   └── __init__.py          # Database models (User, Prediction, MedicalRecord)
 │   ├── controllers/
 │   │   ├── __init__.py
-│   │   └── main.py              # Route handlers for main pages
+│   │   ├── main.py              # Route handlers for main pages
+│   │   └── auth.py              # Authentication routes (login, register, logout, profile)
+│   ├── forms/
+│   │   ├── __init__.py
+│   │   └── auth.py              # Authentication forms (login, registration)
 │   ├── views/
 │   │   └── __init__.py          # Views package (templates stored in templates/)
 │   ├── templates/
-│   │   ├── base.html            # Base template with Bootstrap 5
+│   │   ├── base.html            # Base template with Bootstrap 5 & auth navigation
 │   │   ├── index.html           # Home page
 │   │   ├── about.html           # About page
 │   │   ├── services.html        # Services page
+│   │   ├── auth/                # Authentication templates
+│   │   │   ├── login.html       # Login page
+│   │   │   ├── register.html    # Registration page
+│   │   │   └── profile.html     # User profile page
 │   │   └── errors/              # Custom error pages
 │   │       ├── 404.html
 │   │       ├── 403.html
@@ -102,6 +111,7 @@ This will install:
 - Database tools (SQLAlchemy, Flask-Migrate)
 - Form handling libraries
 - Environment variable management
+- Authentication tools (Flask-Login, Werkzeug)
 
 ### Step 5: Configure Environment Variables
 
@@ -276,9 +286,98 @@ Press `Ctrl+C` in the terminal where the application is running.
 - Access denied message
 - Navigation options
 
+**`app/forms/auth.py`**
+- LoginForm: Handles user login with username/email and password
+- RegistrationForm: Handles new user registration with validation
+- Custom validators for unique username and email
+- Password confirmation matching
+
+**`app/controllers/auth.py`**
+- login(): Handles GET/POST for user login
+- register(): Handles GET/POST for user registration
+- logout(): Handles user logout (requires authentication)
+- profile(): Displays user profile (requires authentication)
+
+**`app/templates/auth/login.html`**
+- Professional login form with Bootstrap 5
+- Username/email and password fields
+- Remember me checkbox
+- Form validation and error display
+- Link to registration page
+
+**`app/templates/auth/register.html`**
+- Comprehensive registration form
+- Personal information fields (name, email, phone, address)
+- Role selection (Patient/Doctor)
+- Age and gender fields
+- Password with confirmation
+- Form validation and error display
+- Link to login page
+
+**`app/templates/auth/profile.html`**
+- User profile display
+- Personal information card
+- Account information card
+- Recent predictions table
+- Logout functionality
+
+## Database Tables
+
+### Users Table
+```sql
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY,
+    username VARCHAR(80) UNIQUE NOT NULL,
+    email VARCHAR(120) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(200) NOT NULL,
+    age INTEGER,
+    gender VARCHAR(10),
+    phone VARCHAR(20),
+    address TEXT,
+    district VARCHAR(100) DEFAULT 'Erode',
+    role VARCHAR(20) DEFAULT 'patient',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at DATETIME,
+    updated_at DATETIME
+);
+```
+
+### Predictions Table
+```sql
+CREATE TABLE predictions (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    prediction_type VARCHAR(50) NOT NULL,
+    prediction_result VARCHAR(20) NOT NULL,
+    confidence_score FLOAT NOT NULL,
+    risk_level VARCHAR(20),
+    image_path VARCHAR(500),
+    symptoms_data JSON,
+    additional_notes TEXT,
+    created_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
+
+### Medical Records Table
+```sql
+CREATE TABLE medical_records (
+    id INTEGER PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    record_type VARCHAR(50) NOT NULL,
+    description TEXT,
+    file_path VARCHAR(500),
+    doctor_notes TEXT,
+    created_at DATETIME,
+    updated_at DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+```
+
 ## Features
 
-### Current Features (Module 1)
+### Current Features (Module 1 & 2)
 
 - **Professional Web Interface**: Modern, responsive design with Bootstrap 5
 - **MVC Architecture**: Clean separation of concerns
@@ -287,10 +386,15 @@ Press `Ctrl+C` in the terminal where the application is running.
 - **Configuration Management**: Environment-based configuration
 - **Logging**: Application logging for debugging
 - **Navigation**: Responsive navigation with mobile support
+- **User Authentication**: Login, registration, logout functionality
+- **Password Security**: Secure password hashing with Werkzeug
+- **Session Management**: Flask-Login for user sessions
+- **User Roles**: Support for Patient and Doctor roles
+- **User Profiles**: Personal profile pages with account information
+- **Form Validation**: WTForms for secure form handling
 
 ### Planned Features (Future Modules)
 
-- **User Authentication**: Registration, login, password management
 - **Lung Cancer Detection**: AI-powered X-ray analysis
 - **Breast Cancer Detection**: Mammography analysis
 - **Skin Cancer Detection**: Image-based detection
