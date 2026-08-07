@@ -337,6 +337,32 @@ Press `Ctrl+C` in the terminal where the application is running.
 - Recent predictions table
 - Logout functionality
 
+**`app/models/__init__.py`**
+- **User**: Base authentication model with Flask-Login integration
+  - Fields: id, username, email, password_hash, full_name, role, is_active, created_at, updated_at
+  - Methods: set_password(), check_password(), is_doctor(), is_patient(), is_admin()
+  - Polymorphic base for Patient and Doctor models
+- **Patient**: Extends User with patient-specific information
+  - Fields: age, gender, phone, address, district, blood_group, emergency_contact, emergency_phone
+  - Relationships: clinical_data, medical_images, prediction_history, reports
+- **Doctor**: Extends User with doctor-specific information
+  - Fields: specialization, license_number, hospital_name, hospital_address, phone, years_of_experience, qualification
+  - Relationships: reports_authored
+- **ClinicalData**: Stores patient-submitted clinical information
+  - Fields: patient_id, symptoms, family_history, lifestyle_factors (JSON), additional_notes, created_at
+  - Relationships: patient, predictions
+- **MedicalImage**: Stores uploaded medical images
+  - Fields: patient_id, image_type, file_path, file_name, file_size, upload_date, description
+  - Relationships: patient, predictions
+- **PredictionHistory**: Stores AI prediction results
+  - Fields: patient_id, cancer_type, prediction_result, confidence_score, risk_level, prediction_date
+  - Foreign keys: clinical_data_id, medical_image_id
+  - Additional fields: model_version, processing_time, additional_data (JSON)
+  - Relationships: patient, clinical_data, medical_image
+- **Report**: Stores doctor-authored medical reports
+  - Fields: patient_id, doctor_id, report_type, title, diagnosis, recommendations, doctor_notes, report_date, prediction_id, status
+  - Relationships: patient, doctor, prediction
+
 **`app/controllers/dashboard.py`**
 - patient_dashboard(): Patient welcome page with statistics
 - clinical_data(): Clinical data form submission
@@ -410,7 +436,7 @@ Press `Ctrl+C` in the terminal where the application is running.
 
 ## Database Tables
 
-### Users Table
+### Users Table (Base Authentication)
 ```sql
 CREATE TABLE users (
     id INTEGER PRIMARY KEY,
@@ -418,53 +444,144 @@ CREATE TABLE users (
     email VARCHAR(120) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(200) NOT NULL,
-    age INTEGER,
-    gender VARCHAR(10),
-    phone VARCHAR(20),
-    address TEXT,
-    district VARCHAR(100) DEFAULT 'Erode',
-    role VARCHAR(20) DEFAULT 'patient',
+    role VARCHAR(20) NOT NULL,  -- patient, doctor, admin
     is_active BOOLEAN DEFAULT TRUE,
     created_at DATETIME,
     updated_at DATETIME
 );
 ```
 
-### Predictions Table
+### Patients Table (Extends Users)
 ```sql
-CREATE TABLE predictions (
+CREATE TABLE patients (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    prediction_type VARCHAR(50) NOT NULL,
-    prediction_result VARCHAR(20) NOT NULL,
-    confidence_score FLOAT NOT NULL,
-    risk_level VARCHAR(20),
-    image_path VARCHAR(500),
-    symptoms_data JSON,
-    additional_notes TEXT,
-    created_at DATETIME,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    age INTEGER,
+    gender VARCHAR(10),
+    phone VARCHAR(20),
+    address TEXT,
+    district VARCHAR(100) DEFAULT 'Erode',
+    blood_group VARCHAR(5),
+    emergency_contact VARCHAR(100),
+    emergency_phone VARCHAR(20),
+    FOREIGN KEY (id) REFERENCES users(id)
 );
 ```
 
-### Medical Records Table
+### Doctors Table (Extends Users)
 ```sql
-CREATE TABLE medical_records (
+CREATE TABLE doctors (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    record_type VARCHAR(50) NOT NULL,
-    description TEXT,
-    file_path VARCHAR(500),
-    doctor_notes TEXT,
-    created_at DATETIME,
-    updated_at DATETIME,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    specialization VARCHAR(100),
+    license_number VARCHAR(50) UNIQUE,
+    hospital_name VARCHAR(200),
+    hospital_address TEXT,
+    phone VARCHAR(20),
+    years_of_experience INTEGER,
+    qualification VARCHAR(200),
+    FOREIGN KEY (id) REFERENCES users(id)
 );
 ```
+
+### Clinical Data Table
+```sql
+CREATE TABLE clinical_data (
+    id INTEGER PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    symptoms TEXT NOT NULL,
+    family_history VARCHAR(50),
+    lifestyle_factors JSON,
+    additional_notes TEXT,
+    created_at DATETIME,
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+);
+```
+
+### Medical Images Table
+```sql
+CREATE TABLE medical_images (
+    id INTEGER PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    image_type VARCHAR(50) NOT NULL,  -- xray, ct_scan, mri, ultrasound, mammography
+    file_path VARCHAR(500) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_size INTEGER,
+    upload_date DATETIME,
+    description TEXT,
+    FOREIGN KEY (patient_id) REFERENCES patients(id)
+);
+```
+
+### Prediction History Table
+```sql
+CREATE TABLE prediction_history (
+    id INTEGER PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    cancer_type VARCHAR(50) NOT NULL,  -- lung, breast, skin, etc.
+    prediction_result VARCHAR(20) NOT NULL,  -- benign, malignant
+    confidence_score FLOAT NOT NULL,
+    risk_level VARCHAR(20),  -- low, medium, high
+    prediction_date DATETIME,
+    clinical_data_id INTEGER,
+    medical_image_id INTEGER,
+    model_version VARCHAR(50),
+    processing_time FLOAT,
+    additional_data JSON,
+    FOREIGN KEY (patient_id) REFERENCES patients(id),
+    FOREIGN KEY (clinical_data_id) REFERENCES clinical_data(id),
+    FOREIGN KEY (medical_image_id) REFERENCES medical_images(id)
+);
+```
+
+### Reports Table
+```sql
+CREATE TABLE reports (
+    id INTEGER PRIMARY KEY,
+    patient_id INTEGER NOT NULL,
+    doctor_id INTEGER NOT NULL,
+    report_type VARCHAR(50) NOT NULL,  -- diagnosis, follow_up, consultation
+    title VARCHAR(200) NOT NULL,
+    diagnosis TEXT,
+    recommendations TEXT,
+    doctor_notes TEXT,
+    report_date DATETIME,
+    prediction_id INTEGER,
+    status VARCHAR(20) DEFAULT 'draft',  -- draft, final, archived
+    FOREIGN KEY (patient_id) REFERENCES patients(id),
+    FOREIGN KEY (doctor_id) REFERENCES doctors(id),
+    FOREIGN KEY (prediction_id) REFERENCES prediction_history(id)
+);
+```
+
+## Model Relationships
+
+### Polymorphic Inheritance
+- **User** is the base class for authentication
+- **Patient** extends User with patient-specific fields
+- **Doctor** extends User with doctor-specific fields
+- Uses SQLAlchemy polymorphic identity for role-based access
+
+### One-to-Many Relationships
+- **Patient → ClinicalData**: One patient can have multiple clinical data entries
+- **Patient → MedicalImage**: One patient can upload multiple medical images
+- **Patient → PredictionHistory**: One patient can have multiple predictions
+- **Patient → Report**: One patient can have multiple reports
+- **Doctor → Report**: One doctor can author multiple reports
+- **ClinicalData → PredictionHistory**: One clinical data can generate multiple predictions
+- **MedicalImage → PredictionHistory**: One medical image can generate multiple predictions
+
+### Foreign Key Relationships
+- `clinical_data.patient_id` → `patients.id`
+- `medical_images.patient_id` → `patients.id`
+- `prediction_history.patient_id` → `patients.id`
+- `prediction_history.clinical_data_id` → `clinical_data.id`
+- `prediction_history.medical_image_id` → `medical_images.id`
+- `reports.patient_id` → `patients.id`
+- `reports.doctor_id` → `doctors.id`
+- `reports.prediction_id` → `prediction_history.id`
 
 ## Features
 
-### Current Features (Module 1, 2, & 3)
+### Current Features (Module 1, 2, 3, & 4)
 
 - **Professional Web Interface**: Modern, responsive design with Bootstrap 5
 - **MVC Architecture**: Clean separation of concerns
@@ -488,6 +605,11 @@ CREATE TABLE medical_records (
 - **Patient Details**: Comprehensive patient profile view
 - **Doctor Predictions**: View all predictions across patients
 - **Medical Reports**: Access medical records and reports
+- **Polymorphic Database Models**: Separate tables for Users, Patients, Doctors
+- **Clinical Data Storage**: Dedicated table for symptoms and lifestyle data
+- **Medical Image Management**: Structured storage for medical images
+- **Prediction History Tracking**: Comprehensive prediction records with AI model metadata
+- **Report Generation**: Doctor-authored reports with diagnosis and recommendations
 
 ### Planned Features (Future Modules)
 

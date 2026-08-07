@@ -39,14 +39,14 @@
                             <tbody>
                                 {% for prediction in predictions %}
                                 <tr>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
                                     <td>
-                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.user.id) }}">
-                                            {{ prediction.user.full_name }}
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}">
+                                            {{ prediction.patient.full_name }}
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">{{ prediction.prediction_type|capitalize }}</span>
+                                        <span class="badge bg-info">{{ prediction.cancer_type|capitalize }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
@@ -64,12 +64,12 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if prediction.image_path %}
-                                        <a href="{{ prediction.image_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        {% if prediction.medical_image %}
+                                        <a href="{{ prediction.medical_image.file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-image"></i> View
                                         </a>
                                         {% endif %}
-                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.user.id) }}" class="btn btn-sm btn-outline-secondary">
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}" class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-person"></i> Patient
                                         </a>
                                     </td>

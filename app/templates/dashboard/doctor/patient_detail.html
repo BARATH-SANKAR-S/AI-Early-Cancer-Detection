@@ -45,8 +45,20 @@
                             <td>{{ patient.gender|capitalize if patient.gender else '-' }}</td>
                         </tr>
                         <tr>
+                            <td><strong>Blood Group:</strong></td>
+                            <td>{{ patient.blood_group or '-' }}</td>
+                        </tr>
+                        <tr>
                             <td><strong>Phone:</strong></td>
                             <td>{{ patient.phone or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emergency Contact:</strong></td>
+                            <td>{{ patient.emergency_contact or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emergency Phone:</strong></td>
+                            <td>{{ patient.emergency_phone or '-' }}</td>
                         </tr>
                         <tr>
                             <td><strong>District:</strong></td>
@@ -82,8 +94,8 @@
                             <tbody>
                                 {% for prediction in predictions %}
                                 <tr>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d') }}</td>
-                                    <td>{{ prediction.prediction_type|capitalize }}</td>
+                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ prediction.cancer_type|capitalize }}</td>
                                     <td>
                                         <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
                                             {{ prediction.prediction_result|capitalize }}

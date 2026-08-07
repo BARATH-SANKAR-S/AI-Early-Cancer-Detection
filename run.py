@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.models import User, Prediction, MedicalRecord
+from app.models import User, Patient, Doctor, ClinicalData, MedicalImage, PredictionHistory, Report
 import os
 
 app = create_app(os.getenv('FLASK_CONFIG', 'development'))
@@ -7,7 +7,16 @@ app = create_app(os.getenv('FLASK_CONFIG', 'development'))
 @app.shell_context_processor
 def make_shell_context():
     """Make objects available in Flask shell"""
-    return {'db': db, 'User': User, 'Prediction': Prediction, 'MedicalRecord': MedicalRecord}
+    return {
+        'db': db,
+        'User': User,
+        'Patient': Patient,
+        'Doctor': Doctor,
+        'ClinicalData': ClinicalData,
+        'MedicalImage': MedicalImage,
+        'PredictionHistory': PredictionHistory,
+        'Report': Report
+    }
 
 @app.cli.command()
 def init_db():

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
-from app.models import User
+from app.models import User, Patient, Doctor
 from app.forms.auth import LoginForm, RegistrationForm
 
 auth_bp = Blueprint('auth', __name__)
@@ -33,24 +33,42 @@ def register():
     """
     Handle user registration.
     GET: Display registration form
-    POST: Process registration data
+    POST: Process registration data and create Patient or Doctor based on role
     """
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(
-            username=form.username.data,
-            email=form.email.data,
-            full_name=form.full_name.data,
-            role=form.role.data,
-            age=form.age.data,
-            gender=form.gender.data,
-            phone=form.phone.data,
-            address=form.address.data,
-            district=form.district.data if form.district.data else 'Erode'
-        )
+        # Create appropriate user type based on role
+        if form.role.data == 'patient':
+            user = Patient(
+                username=form.username.data,
+                email=form.email.data,
+                full_name=form.full_name.data,
+                role='patient',
+                age=form.age.data,
+                gender=form.gender.data,
+                phone=form.phone.data,
+                address=form.address.data,
+                district=form.district.data if form.district.data else 'Erode'
+            )
+        elif form.role.data == 'doctor':
+            user = Doctor(
+                username=form.username.data,
+                email=form.email.data,
+                full_name=form.full_name.data,
+                role='doctor',
+                phone=form.phone.data
+            )
+        else:
+            user = User(
+                username=form.username.data,
+                email=form.email.data,
+                full_name=form.full_name.data,
+                role='admin'
+            )
+        
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

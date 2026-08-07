@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
 from app import db
-from app.models import User, Prediction, MedicalRecord
+from app.models import Patient, Doctor, ClinicalData, MedicalImage, PredictionHistory, Report
 import os
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -29,8 +29,8 @@ def patient_dashboard():
         return redirect(url_for('main.index'))
     
     # Get patient's prediction count
-    prediction_count = Prediction.query.filter_by(user_id=current_user.id).count()
-    recent_predictions = Prediction.query.filter_by(user_id=current_user.id).order_by(Prediction.created_at.desc()).limit(5).all()
+    prediction_count = PredictionHistory.query.filter_by(patient_id=current_user.id).count()
+    recent_predictions = PredictionHistory.query.filter_by(patient_id=current_user.id).order_by(PredictionHistory.prediction_date.desc()).limit(5).all()
     
     return render_template('dashboard/patient/dashboard.html', 
                           user=current_user,
@@ -52,24 +52,19 @@ def clinical_data():
         # Collect clinical data from form
         symptoms = request.form.get('symptoms')
         family_history = request.form.get('family_history')
-        lifestyle = request.form.get('lifestyle')
+        lifestyle = request.form.getlist('lifestyle')  # Get multiple checkboxes
         additional_notes = request.form.get('additional_notes')
         
-        # Create prediction record with clinical data
-        prediction = Prediction(
-            user_id=current_user.id,
-            prediction_type='clinical',
-            prediction_result='pending',
-            confidence_score=0.0,
-            symptoms_data={
-                'symptoms': symptoms,
-                'family_history': family_history,
-                'lifestyle': lifestyle
-            },
+        # Create clinical data record
+        clinical_data = ClinicalData(
+            patient_id=current_user.id,
+            symptoms=symptoms,
+            family_history=family_history,
+            lifestyle_factors=lifestyle,
             additional_notes=additional_notes
         )
         
-        db.session.add(prediction)
+        db.session.add(clinical_data)
         db.session.commit()
         
         flash('Clinical data submitted successfully. Prediction will be processed.', 'success')
@@ -111,16 +106,19 @@ def upload_image():
             file_path = os.path.join(upload_dir, filename)
             file.save(file_path)
             
-            # Create prediction record
-            prediction = Prediction(
-                user_id=current_user.id,
-                prediction_type='image',
-                prediction_result='pending',
-                confidence_score=0.0,
-                image_path=f'/static/uploads/medical_images/{filename}'
+            # Determine image type based on file selection or form
+            image_type = request.form.get('image_type', 'xray')
+            
+            # Create medical image record
+            medical_image = MedicalImage(
+                patient_id=current_user.id,
+                image_type=image_type,
+                file_path=f'/static/uploads/medical_images/{filename}',
+                file_name=filename,
+                file_size=os.path.getsize(file_path)
             )
             
-            db.session.add(prediction)
+            db.session.add(medical_image)
             db.session.commit()
             
             flash('Image uploaded successfully. Analysis will be processed.', 'success')
@@ -141,7 +139,7 @@ def patient_history():
         flash('Access denied. Patient dashboard only.', 'error')
         return redirect(url_for('main.index'))
     
-    predictions = Prediction.query.filter_by(user_id=current_user.id).order_by(Prediction.created_at.desc()).all()
+    predictions = PredictionHistory.query.filter_by(patient_id=current_user.id).order_by(PredictionHistory.prediction_date.desc()).all()
     
     return render_template('dashboard/patient/history.html', 
                           user=current_user,
@@ -161,9 +159,9 @@ def doctor_dashboard():
         return redirect(url_for('main.index'))
     
     # Get statistics
-    total_patients = User.query.filter_by(role='patient').count()
-    total_predictions = Prediction.query.count()
-    recent_predictions = Prediction.query.order_by(Prediction.created_at.desc()).limit(10).all()
+    total_patients = Patient.query.count()
+    total_predictions = PredictionHistory.query.count()
+    recent_predictions = PredictionHistory.query.order_by(PredictionHistory.prediction_date.desc()).limit(10).all()
     
     return render_template('dashboard/doctor/dashboard.html',
                           user=current_user,
@@ -182,7 +180,7 @@ def doctor_patients():
         flash('Access denied. Doctor dashboard only.', 'error')
         return redirect(url_for('main.index'))
     
-    patients = User.query.filter_by(role='patient').order_by(User.created_at.desc()).all()
+    patients = Patient.query.order_by(Patient.created_at.desc()).all()
     
     return render_template('dashboard/doctor/patients.html',
                           user=current_user,
@@ -204,11 +202,10 @@ def search_patient():
     
     if search_query:
         # Search by username, email, or full name
-        patients = User.query.filter(
-            User.role == 'patient',
-            (User.username.ilike(f'%{search_query}%')) |
-            (User.email.ilike(f'%{search_query}%')) |
-            (User.full_name.ilike(f'%{search_query}%'))
+        patients = Patient.query.filter(
+            (Patient.username.ilike(f'%{search_query}%')) |
+            (Patient.email.ilike(f'%{search_query}%')) |
+            (Patient.full_name.ilike(f'%{search_query}%'))
         ).all()
     
     return render_template('dashboard/doctor/search_patient.html',
@@ -227,20 +224,16 @@ def doctor_patient_detail(patient_id):
         flash('Access denied. Doctor dashboard only.', 'error')
         return redirect(url_for('main.index'))
     
-    patient = User.query.get_or_404(patient_id)
+    patient = Patient.query.get_or_404(patient_id)
     
-    if patient.role != 'patient':
-        flash('Invalid patient ID.', 'error')
-        return redirect(url_for('dashboard.doctor_patients'))
-    
-    predictions = Prediction.query.filter_by(user_id=patient_id).order_by(Prediction.created_at.desc()).all()
-    medical_records = MedicalRecord.query.filter_by(user_id=patient_id).order_by(MedicalRecord.created_at.desc()).all()
+    predictions = PredictionHistory.query.filter_by(patient_id=patient_id).order_by(PredictionHistory.prediction_date.desc()).all()
+    reports = Report.query.filter_by(patient_id=patient_id).order_by(Report.report_date.desc()).all()
     
     return render_template('dashboard/doctor/patient_detail.html',
                           user=current_user,
                           patient=patient,
                           predictions=predictions,
-                          medical_records=medical_records)
+                          medical_records=reports)
 
 @dashboard_bp.route('/doctor/predictions')
 @login_required
@@ -253,7 +246,7 @@ def doctor_predictions():
         flash('Access denied. Doctor dashboard only.', 'error')
         return redirect(url_for('main.index'))
     
-    predictions = Prediction.query.order_by(Prediction.created_at.desc()).all()
+    predictions = PredictionHistory.query.order_by(PredictionHistory.prediction_date.desc()).all()
     
     return render_template('dashboard/doctor/predictions.html',
                           user=current_user,
@@ -270,8 +263,8 @@ def doctor_reports():
         flash('Access denied. Doctor dashboard only.', 'error')
         return redirect(url_for('main.index'))
     
-    medical_records = MedicalRecord.query.order_by(MedicalRecord.created_at.desc()).all()
+    reports = Report.query.order_by(Report.report_date.desc()).all()
     
     return render_template('dashboard/doctor/reports.html',
                           user=current_user,
-                          medical_records=medical_records)
+                          medical_records=reports)

@@ -38,9 +38,9 @@
                             <tbody>
                                 {% for prediction in predictions %}
                                 <tr>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
                                     <td>
-                                        <span class="badge bg-info">{{ prediction.prediction_type|capitalize }}</span>
+                                        <span class="badge bg-info">{{ prediction.cancer_type|capitalize }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
@@ -58,12 +58,12 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        {% if prediction.image_path %}
-                                        <a href="{{ prediction.image_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        {% if prediction.medical_image %}
+                                        <a href="{{ prediction.medical_image.file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-image"></i> View Image
                                         </a>
                                         {% endif %}
-                                        {% if prediction.symptoms_data %}
+                                        {% if prediction.clinical_data %}
                                         <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#symptomsModal{{ prediction.id }}">
                                             <i class="bi bi-file-text"></i> Details
                                         </button>
@@ -72,7 +72,7 @@
                                 </tr>
                                 
                                 <!-- Symptoms Modal -->
-                                {% if prediction.symptoms_data %}
+                                {% if prediction.clinical_data %}
                                 <div class="modal fade" id="symptomsModal{{ prediction.id }}" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
@@ -82,22 +82,16 @@
                                             </div>
                                             <div class="modal-body">
                                                 <dl class="row">
-                                                    {% if prediction.symptoms_data.get('symptoms') %}
                                                     <dt class="col-sm-4">Symptoms:</dt>
-                                                    <dd class="col-sm-8">{{ prediction.symptoms_data.symptoms }}</dd>
-                                                    {% endif %}
-                                                    {% if prediction.symptoms_data.get('family_history') %}
+                                                    <dd class="col-sm-8">{{ prediction.clinical_data.symptoms }}</dd>
                                                     <dt class="col-sm-4">Family History:</dt>
-                                                    <dd class="col-sm-8">{{ prediction.symptoms_data.family_history|capitalize }}</dd>
-                                                    {% endif %}
-                                                    {% if prediction.symptoms_data.get('lifestyle') %}
+                                                    <dd class="col-sm-8">{{ prediction.clinical_data.family_history|capitalize }}</dd>
                                                     <dt class="col-sm-4">Lifestyle:</dt>
-                                                    <dd class="col-sm-8">{{ prediction.symptoms_data.lifestyle|join(', ')|capitalize }}</dd>
-                                                    {% endif %}
+                                                    <dd class="col-sm-8">{{ prediction.clinical_data.lifestyle_factors|join(', ')|capitalize }}</dd>
                                                 </dl>
-                                                {% if prediction.additional_notes %}
+                                                {% if prediction.clinical_data.additional_notes %}
                                                 <h6 class="mt-3">Additional Notes:</h6>
-                                                <p>{{ prediction.additional_notes }}</p>
+                                                <p>{{ prediction.clinical_data.additional_notes }}</p>
                                                 {% endif %}
                                             </div>
                                             <div class="modal-footer">
