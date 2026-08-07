@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <h1>AI-Based Early Cancer Detection</h1>
+        <p>Advanced Machine Learning for Early Cancer Risk Prediction in Erode District</p>
+        <a href="{{ url_for('main.services') }}" class="btn btn-light btn-custom btn-lg">
+            <i class="bi bi-arrow-right-circle"></i> Get Started
+        </a>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">Comprehensive AI-powered cancer detection and risk assessment</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card p-4">
+                    <div class="card-body text-center">
+                        <i class="bi bi-lungs feature-icon"></i>
+                        <h4 class="card-title">Lung Cancer Detection</h4>
+                        <p class="card-text">AI-powered analysis of chest X-rays and CT scans for early lung cancer detection.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card p-4">
+                    <div class="card-body text-center">
+                        <i class="bi bi-heart feature-icon"></i>
+                        <h4 class="card-title">Breast Cancer Detection</h4>
+                        <p class="card-text">Advanced mammography analysis using deep learning for accurate breast cancer screening.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card feature-card p-4">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person feature-icon"></i>
+                        <h4 class="card-title">Skin Cancer Detection</h4>
+                        <p class="card-text">Dermatological image analysis for early detection of skin cancer and melanoma.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-primary">95%</div>
+                <p class="lead">Accuracy Rate</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-success">10K+</div>
+                <p class="lead">Patients Screened</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-info">24/7</div>
+                <p class="lead">Availability</p>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="display-4 fw-bold text-warning">50+</div>
+                <p class="lead">Healthcare Partners</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="section-title">Ready to Get Started?</h2>
+        <p class="section-subtitle">Take the first step towards early cancer detection and prevention</p>
+        <a href="{{ url_for('main.services') }}" class="btn btn-primary btn-custom btn-lg me-3">
+            <i class="bi bi-clipboard-check"></i> Start Screening
+        </a>
+        <a href="{{ url_for('main.about') }}" class="btn btn-outline-primary btn-custom btn-lg">
+            <i class="bi bi-info-circle"></i> Learn More
+        </a>
+    </div>
+</section>
+{% endblock %}

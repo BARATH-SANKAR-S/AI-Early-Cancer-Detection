@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center">
+        <h1>Our Services</h1>
+        <p>Comprehensive AI-Powered Cancer Detection Solutions</p>
+    </div>
+</section>
+
+<!-- Services Overview -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Detection Services</h2>
+            <p class="section-subtitle">Advanced AI models for various types of cancer detection</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Lung Cancer -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-lungs feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Lung Cancer Detection</h4>
+                        <p class="card-text">Our AI analyzes chest X-rays and CT scans to detect early signs of lung cancer with high accuracy.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Chest X-ray analysis</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>CT scan interpretation</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Nodule detection</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Risk assessment</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Breast Cancer -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-heart feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Breast Cancer Detection</h4>
+                        <p class="card-text">Deep learning models analyze mammograms for early detection of breast abnormalities and tumors.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Mammogram analysis</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Tumor classification</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Benign vs malignant</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Risk stratification</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin Cancer -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-person feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Skin Cancer Detection</h4>
+                        <p class="card-text">AI-powered dermatological image analysis for early detection of skin cancer and melanoma.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lesion classification</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Melanoma detection</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Image upload support</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Instant results</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Risk Prediction -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-graph-up feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Risk Prediction</h4>
+                        <p class="card-text">Comprehensive risk assessment based on patient demographics, family history, and lifestyle factors.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Personalized risk scores</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Family history analysis</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lifestyle assessment</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Prevention recommendations</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">Assess Risk</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Medical Records -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-file-medical feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Medical Records</h4>
+                        <p class="card-text">Secure storage and management of patient medical history, lab reports, and imaging studies.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Secure cloud storage</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lab report upload</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Scan imaging storage</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>History tracking</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">View Records</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Consultation -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-chat-doctor feature-icon"></i>
+                        </div>
+                        <h4 class="card-title text-center mb-3">Expert Consultation</h4>
+                        <p class="card-text">Connect with oncologists and radiologists for expert review of AI predictions and results.</p>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Doctor consultation</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Second opinion</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Treatment guidance</li>
+                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Follow-up care</li>
+                        </ul>
+                        <button class="btn btn-primary w-100 mt-3">Book Consultation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Process Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">How It Works</h2>
+        <div class="row">
+            <div class="col-md-3 text-center mb-4">
+                <div class="display-4 text-primary mb-3">1</div>
+                <h5>Upload Medical Images</h5>
+                <p class="text-muted">Upload your X-rays, mammograms, or skin images through our secure platform.</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="display-4 text-success mb-3">2</div>
+                <h5>AI Analysis</h5>
+                <p class="text-muted">Our advanced AI models analyze your images for any abnormalities.</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="display-4 text-info mb-3">3</div>
+                <h5>Get Results</h5>
+                <p class="text-muted">Receive instant preliminary results with confidence scores.</p>
+            </div>
+            <div class="col-md-3 text-center mb-4">
+                <div class="display-4 text-warning mb-3">4</div>
+                <h5>Expert Review</h5>
+                <p class="text-muted">Optional consultation with medical professionals for confirmation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
