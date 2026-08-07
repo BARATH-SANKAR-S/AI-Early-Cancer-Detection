@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_patients') }}">Patients</a></li>
+                    <li class="breadcrumb-item active">{{ patient.full_name }}</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 mb-4">Patient Profile: {{ patient.full_name }}</h1>
+        </div>
+    </div>
+    
+    <!-- Patient Information -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td><strong>Name:</strong></td>
+                            <td>{{ patient.full_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Username:</strong></td>
+                            <td>@{{ patient.username }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email:</strong></td>
+                            <td>{{ patient.email }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Age:</strong></td>
+                            <td>{{ patient.age or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gender:</strong></td>
+                            <td>{{ patient.gender|capitalize if patient.gender else '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phone:</strong></td>
+                            <td>{{ patient.phone or '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>District:</strong></td>
+                            <td>{{ patient.district }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Joined:</strong></td>
+                            <td>{{ patient.created_at.strftime('%Y-%m-%d') }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Prediction History ({{ predictions|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Result</th>
+                                    <th>Confidence</th>
+                                    <th>Risk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in predictions %}
+                                <tr>
+                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ prediction.prediction_type|capitalize }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
+                                            {{ prediction.prediction_result|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
+                                    <td>
+                                        {% if prediction.risk_level %}
+                                        <span class="badge bg-{{ 'danger' if prediction.risk_level == 'high' else 'warning' if prediction.risk_level == 'medium' else 'success' }}">
+                                            {{ prediction.risk_level|capitalize }}
+                                        </span>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No predictions recorded for this patient.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-medical"></i> Medical Records ({{ medical_records|length }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if medical_records %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in medical_records %}
+                                <tr>
+                                    <td>{{ record.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ record.record_type|capitalize }}</td>
+                                    <td>{{ record.description or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No medical records available for this patient.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <a href="{{ url_for('dashboard.doctor_patients') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Patients
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

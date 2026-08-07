@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Predictions</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 mb-4">All Predictions</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Prediction History</h5>
+                    <span class="badge bg-light text-dark">{{ predictions|length }} Total</span>
+                </div>
+                <div class="card-body">
+                    {% if predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Type</th>
+                                    <th>Result</th>
+                                    <th>Confidence</th>
+                                    <th>Risk Level</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for prediction in predictions %}
+                                <tr>
+                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.user.id) }}">
+                                            {{ prediction.user.full_name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ prediction.prediction_type|capitalize }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
+                                            {{ prediction.prediction_result|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
+                                    <td>
+                                        {% if prediction.risk_level %}
+                                        <span class="badge bg-{{ 'danger' if prediction.risk_level == 'high' else 'warning' if prediction.risk_level == 'medium' else 'success' }}">
+                                            {{ prediction.risk_level|capitalize }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if prediction.image_path %}
+                                        <a href="{{ prediction.image_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-image"></i> View
+                                        </a>
+                                        {% endif %}
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.user.id) }}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-person"></i> Patient
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-clipboard-data display-1 text-muted mb-3"></i>
+                        <h4>No Predictions Yet</h4>
+                        <p class="text-muted">No predictions have been made in the system yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

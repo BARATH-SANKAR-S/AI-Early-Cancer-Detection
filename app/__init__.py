@@ -43,8 +43,10 @@ def create_app(config_name='development'):
     # Register blueprints
     from app.controllers.main import main_bp
     from app.controllers.auth import auth_bp
+    from app.controllers.dashboard import dashboard_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     
     # Register error handlers
     register_error_handlers(app)

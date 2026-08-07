@@ -26,7 +26,8 @@ AI-Early-Cancer-Detection/
 │   ├── controllers/
 │   │   ├── __init__.py
 │   │   ├── main.py              # Route handlers for main pages
-│   │   └── auth.py              # Authentication routes (login, register, logout, profile)
+│   │   ├── auth.py              # Authentication routes (login, register, logout, profile)
+│   │   └── dashboard.py        # Dashboard routes (patient & doctor dashboards)
 │   ├── forms/
 │   │   ├── __init__.py
 │   │   └── auth.py              # Authentication forms (login, registration)
@@ -41,6 +42,19 @@ AI-Early-Cancer-Detection/
 │   │   │   ├── login.html       # Login page
 │   │   │   ├── register.html    # Registration page
 │   │   │   └── profile.html     # User profile page
+│   │   ├── dashboard/           # Dashboard templates
+│   │   │   ├── patient/         # Patient dashboard templates
+│   │   │   │   ├── dashboard.html      # Patient welcome page
+│   │   │   │   ├── clinical_data.html  # Clinical data form
+│   │   │   │   ├── upload_image.html   # Medical image upload
+│   │   │   │   └── history.html        # Prediction history
+│   │   │   └── doctor/          # Doctor dashboard templates
+│   │   │       ├── dashboard.html      # Doctor welcome page
+│   │   │       ├── patients.html       # View all patients
+│   │   │       ├── search_patient.html # Search patients
+│   │   │       ├── patient_detail.html # Patient details
+│   │   │       ├── predictions.html    # View all predictions
+│   │   │       └── reports.html       # View medical reports
 │   │   └── errors/              # Custom error pages
 │   │       ├── 404.html
 │   │       ├── 403.html
@@ -48,7 +62,9 @@ AI-Early-Cancer-Detection/
 │   └── static/
 │       ├── css/                 # Custom CSS files
 │       ├── js/                  # Custom JavaScript files
-│       └── img/                 # Image assets
+│       ├── img/                 # Image assets
+│       └── uploads/             # Uploaded files (medical images)
+│           └── medical_images/  # Medical image uploads
 ├── config/
 │   └── config.py                # Configuration classes (dev, prod, testing)
 ├── migrations/                  # Database migration files (Flask-Migrate)
@@ -321,6 +337,77 @@ Press `Ctrl+C` in the terminal where the application is running.
 - Recent predictions table
 - Logout functionality
 
+**`app/controllers/dashboard.py`**
+- patient_dashboard(): Patient welcome page with statistics
+- clinical_data(): Clinical data form submission
+- upload_image(): Medical image upload handling
+- patient_history(): Patient prediction history
+- doctor_dashboard(): Doctor welcome page with statistics
+- doctor_patients(): View all patients
+- search_patient(): Search patients by name/email
+- doctor_patient_detail(): View patient details
+- doctor_predictions(): View all predictions
+- doctor_reports(): View medical reports
+- allowed_file(): Helper function for file validation
+
+**`app/templates/dashboard/patient/dashboard.html`**
+- Patient welcome page
+- Quick statistics cards
+- Quick action buttons
+- Recent predictions table
+
+**`app/templates/dashboard/patient/clinical_data.html`**
+- Clinical data submission form
+- Symptoms description
+- Family history selection
+- Lifestyle factors checkboxes
+- Additional notes field
+
+**`app/templates/dashboard/patient/upload_image.html`**
+- Medical image upload form
+- File type validation
+- Upload instructions
+- Privacy notice
+
+**`app/templates/dashboard/patient/history.html`**
+- Patient prediction history table
+- Prediction details modal
+- Image viewing capability
+- Empty state with action buttons
+
+**`app/templates/dashboard/doctor/dashboard.html`**
+- Doctor welcome page
+- System statistics
+- Quick action buttons
+- Recent predictions table
+
+**`app/templates/dashboard/doctor/patients.html`**
+- All patients table
+- Patient information display
+- View patient details button
+
+**`app/templates/dashboard/doctor/search_patient.html`**
+- Patient search form
+- Search results table
+- Empty state for no results
+
+**`app/templates/dashboard/doctor/patient_detail.html`**
+- Patient profile information
+- Prediction history
+- Medical records
+- Back to patients button
+
+**`app/templates/dashboard/doctor/predictions.html`**
+- All predictions table
+- Patient links
+- Prediction details
+- Image viewing capability
+
+**`app/templates/dashboard/doctor/reports.html`**
+- Medical records table
+- Patient links
+- File viewing capability
+
 ## Database Tables
 
 ### Users Table
@@ -377,7 +464,7 @@ CREATE TABLE medical_records (
 
 ## Features
 
-### Current Features (Module 1 & 2)
+### Current Features (Module 1, 2, & 3)
 
 - **Professional Web Interface**: Modern, responsive design with Bootstrap 5
 - **MVC Architecture**: Clean separation of concerns
@@ -392,6 +479,15 @@ CREATE TABLE medical_records (
 - **User Roles**: Support for Patient and Doctor roles
 - **User Profiles**: Personal profile pages with account information
 - **Form Validation**: WTForms for secure form handling
+- **Patient Dashboard**: Welcome page with statistics and quick actions
+- **Clinical Data Form**: Symptom and medical history submission
+- **Medical Image Upload**: Secure file upload for medical images
+- **Patient Prediction History**: View all patient predictions
+- **Doctor Dashboard**: System overview and statistics
+- **Patient Management**: View and search patients
+- **Patient Details**: Comprehensive patient profile view
+- **Doctor Predictions**: View all predictions across patients
+- **Medical Reports**: Access medical records and reports
 
 ### Planned Features (Future Modules)
 

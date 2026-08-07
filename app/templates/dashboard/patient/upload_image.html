@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.patient_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Upload Medical Image</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 mb-4">Upload Medical Image</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-upload"></i> Image Upload</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('dashboard.upload_image') }}" enctype="multipart/form-data">
+                        
+                        <div class="mb-4">
+                            <label for="file" class="form-label">Select Medical Image *</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.bmp,.tiff" required>
+                            <div class="form-text">Accepted formats: PNG, JPG, JPEG, GIF, BMP, TIFF. Maximum file size: 16MB</div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> 
+                            <strong>Supported Image Types:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>X-ray images</li>
+                                <li>CT scans</li>
+                                <li>MRI scans</li>
+                                <li>Ultrasound images</li>
+                                <li>Mammography images</li>
+                                <li>Pathology reports (as images)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-cloud-upload"></i> Upload Image
+                            </button>
+                            <a href="{{ url_for('dashboard.patient_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Ensure image is clear and high-quality</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Remove personal information from images</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Use the original medical image format</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Include relevant patient ID if available</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-shield-check"></i> Privacy & Security</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-0">Your medical images are encrypted and stored securely. They are only accessible to authorized healthcare providers involved in your care.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.patient_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Clinical Data</li>
+                </ol>
+            </nav>
+            <h1 class="display-5 mb-4">Submit Clinical Data</h1>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-medical"></i> Clinical Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('dashboard.clinical_data') }}">
+                        
+                        <div class="mb-4">
+                            <label for="symptoms" class="form-label">Describe Your Symptoms *</label>
+                            <textarea class="form-control" id="symptoms" name="symptoms" rows="4" required
+                                      placeholder="Please describe any symptoms you are experiencing, including their duration and severity..."></textarea>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="family_history" class="form-label">Family History of Cancer</label>
+                            <select class="form-select" id="family_history" name="family_history">
+                                <option value="">Select an option</option>
+                                <option value="none">No family history</option>
+                                <option value="parent">Parent had cancer</option>
+                                <option value="sibling">Sibling had cancer</option>
+                                <option value="grandparent">Grandparent had cancer</option>
+                                <option value="multiple">Multiple family members</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="lifestyle" class="form-label">Lifestyle Factors</label>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="smoking" name="lifestyle" value="smoking">
+                                        <label class="form-check-label" for="smoking">Smoking</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="alcohol" name="lifestyle" value="alcohol">
+                                        <label class="form-check-label" for="alcohol">Alcohol consumption</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="sedentary" name="lifestyle" value="sedentary">
+                                        <label class="form-check-label" for="sedentary">Sedentary lifestyle</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="diet" name="lifestyle" value="poor_diet">
+                                        <label class="form-check-label" for="diet">Poor diet</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="additional_notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additional_notes" name="additional_notes" rows="3"
+                                      placeholder="Any other relevant information..."></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-send"></i> Submit Clinical Data
+                            </button>
+                            <a href="{{ url_for('dashboard.patient_dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Instructions</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Describe your symptoms in detail</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Include duration and severity</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Provide accurate family history</li>
+                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Select applicable lifestyle factors</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Add any additional relevant information</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Privacy Notice</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small text-muted mb-0">Your clinical data is encrypted and stored securely. Only authorized medical personnel can access your information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
