@@ -581,7 +581,7 @@ CREATE TABLE reports (
 
 ## Features
 
-### Current Features (Module 1, 2, 3, 4, & 5)
+### Current Features (Module 1, 2, 3, 4, 5, & 6)
 
 - **Professional Web Interface**: Modern, responsive design with Bootstrap 5
 - **MVC Architecture**: Clean separation of concerns
@@ -614,6 +614,11 @@ CREATE TABLE reports (
 - **Dataset Download Script**: Automated download of public cancer datasets
 - **Dataset Loader**: Flexible loading mechanisms for different dataset formats
 - **Dataset Validator**: Integrity and quality validation for downloaded datasets
+- **Clinical Data Preprocessing**: Missing value handling, duplicate removal, encoding, scaling
+- **Feature Selection**: K-Best, Mutual Information, RFE methods
+- **Train-Test Split**: Stratified and random splitting for model evaluation
+- **Image Preprocessing**: Resize, normalization, noise removal, contrast enhancement
+- **Data Augmentation**: Multiple augmentation techniques for medical images
 
 ### Planned Features (Future Modules)
 
@@ -716,6 +721,95 @@ python datasets/dataset_validator.py --dataset isic
 ```
 
 For detailed dataset information, see `DATASETS.md`.
+
+## Preprocessing (Module 6)
+
+### Clinical Data Preprocessing
+
+**`preprocessing/clinical/clinical_preprocessor.py`**
+- Complete preprocessing pipeline for clinical data
+- Missing value handling (mean, median, mode, drop strategies)
+- Duplicate removal with logging
+- Categorical encoding (label encoding, one-hot encoding)
+- Feature scaling (standard scaling, minmax scaling)
+- Feature selection (K-Best, Mutual Information, RFE)
+- Train-test split with stratification option
+- Artifact saving (scalers, encoders, feature selectors)
+
+### Medical Image Preprocessing
+
+**`preprocessing/images/image_preprocessor.py`**
+- Complete preprocessing pipeline for medical images
+- Image resizing with multiple interpolation methods
+- Normalization (minmax, z-score, percentile)
+- Noise removal (Gaussian, median, bilateral, non-local means)
+- Contrast enhancement (CLAHE, histogram equalization, gamma correction)
+- Data augmentation (flip, rotation, brightness, contrast, zoom, noise)
+- Batch processing for entire directories
+
+### Preprocessing Workflow
+
+**`preprocessing/WORKFLOW.md`**
+- Detailed workflow diagrams for clinical and image preprocessing
+- Step-by-step visualization of preprocessing pipelines
+- Combined workflow showing integration of both data types
+- Parameter summaries and file organization
+
+### Preprocessing Guide
+
+**`preprocessing/PREPROCESSING_GUIDE.md`**
+- Comprehensive explanation of each preprocessing step
+- Why each step is important and when to use it
+- Implementation details and best practices
+- Common issues and solutions
+- Usage examples for both clinical and image preprocessing
+
+### Usage Examples
+
+**Preprocess clinical data:**
+```bash
+python preprocessing/clinical/clinical_preprocessor.py \
+    --input datasets/raw/clinical_data.csv \
+    --target diagnosis \
+    --output-dir datasets/processed \
+    --missing-strategy mean \
+    --encoding label \
+    --scaling standard \
+    --feature-selection kbest \
+    --n-features 10 \
+    --test-size 0.2
+```
+
+**Preprocess medical images:**
+```bash
+python preprocessing/images/image_preprocessor.py \
+    --input datasets/skin_cancer/isic_dicm_17k \
+    --output datasets/processed/images \
+    --target-size 224 224 \
+    --normalize minmax \
+    --denoise bilateral \
+    --enhance clahe \
+    --augment \
+    --augmentations horizontal_flip rotation brightness
+```
+
+### Preprocessing Steps Explained
+
+**Clinical Data:**
+1. **Missing Value Handling**: Fill or remove missing data to prevent errors
+2. **Duplicate Removal**: Eliminate duplicate records to prevent bias
+3. **Categorical Encoding**: Convert text categories to numerical values
+4. **Feature Scaling**: Normalize numerical features to consistent ranges
+5. **Feature Selection**: Select most predictive features to improve performance
+6. **Train-Test Split**: Divide data for unbiased model evaluation
+
+**Medical Images:**
+1. **Image Loading**: Convert image files to numerical arrays
+2. **Resizing**: Standardize image dimensions for model input
+3. **Normalization**: Scale pixel values to consistent range
+4. **Noise Removal**: Clean acquisition noise while preserving features
+5. **Contrast Enhancement**: Improve visibility of diagnostic features
+6. **Data Augmentation**: Generate additional samples to prevent overfitting
 
 ## Architecture
 
