@@ -581,7 +581,7 @@ CREATE TABLE reports (
 
 ## Features
 
-### Current Features (Module 1, 2, 3, & 4)
+### Current Features (Module 1, 2, 3, 4, & 5)
 
 - **Professional Web Interface**: Modern, responsive design with Bootstrap 5
 - **MVC Architecture**: Clean separation of concerns
@@ -610,15 +610,112 @@ CREATE TABLE reports (
 - **Medical Image Management**: Structured storage for medical images
 - **Prediction History Tracking**: Comprehensive prediction records with AI model metadata
 - **Report Generation**: Doctor-authored reports with diagnosis and recommendations
+- **Dataset Management**: Structured folder organization for cancer datasets
+- **Dataset Download Script**: Automated download of public cancer datasets
+- **Dataset Loader**: Flexible loading mechanisms for different dataset formats
+- **Dataset Validator**: Integrity and quality validation for downloaded datasets
 
 ### Planned Features (Future Modules)
 
-- **Lung Cancer Detection**: AI-powered X-ray analysis
+- **AI Model Training**: Train cancer detection models on public datasets
+- **Lung Cancer Detection**: AI-powered X-ray/CT analysis
 - **Breast Cancer Detection**: Mammography analysis
 - **Skin Cancer Detection**: Image-based detection
 - **Risk Prediction**: Comprehensive risk assessment
 - **Medical Records**: Secure record management
 - **Expert Consultation**: Doctor-patient communication
+
+## Datasets (Module 5)
+
+### Why No Erode-Specific Dataset?
+
+There is no publicly available cancer detection dataset specifically for Erode District due to:
+- Privacy and data protection regulations
+- Limited digital infrastructure at district level
+- Most public datasets come from major research institutions in developed countries
+- Ethical and legal barriers to sharing medical data across borders
+
+### Recommended Public Datasets
+
+#### ISIC-DICM-17K (Skin Cancer)
+- **Source**: International Skin Imaging Collaboration
+- **Records**: 17,060 dermoscopic images (8,530 melanoma, 8,530 non-melanoma)
+- **License**: CC BY 3.0
+- **Suitability**: Balanced dataset with high-quality dermoscopic images
+
+#### LIDC-IDRI (Lung Cancer)
+- **Source**: The Cancer Imaging Archive (TCIA)
+- **Records**: 1,010 patients, 244,527 CT images
+- **License**: CC BY 3.0
+- **Suitability**: Annotated by 4 expert radiologists with consensus process
+
+#### CBIS-DDSM (Breast Cancer)
+- **Source**: The Cancer Imaging Archive (TCIA)
+- **Records**: 1,566 patients, 2,620 mammography studies
+- **License**: CC BY 3.0
+- **Suitability**: Curated subset with verified pathology information
+
+#### Duke Lung Cancer Screening Dataset 2024
+- **Source**: Duke University Health System (Zenodo)
+- **Records**: 1,613 CT volumes, 2,487 annotated nodules
+- **License**: CC BY 4.0
+- **Suitability**: Modern CT scans (2015-2021) with current technology
+
+### Dataset Management Tools
+
+**`datasets/download_datasets.py`**
+- Automated download script for public cancer datasets
+- Supports ZIP and TAR extraction
+- Progress tracking and error handling
+- Command-line interface for selective downloads
+
+**`datasets/dataset_loader.py`**
+- Flexible loading mechanisms for different dataset formats
+- Support for ISIC, LIDC-IDRI, and CBIS-DDSM datasets
+- Image loading with normalization and resizing
+- Metadata parsing and validation
+- Batch processing capabilities
+
+**`datasets/dataset_validator.py`**
+- Integrity validation for downloaded datasets
+- Image quality checks (corruption, size, format)
+- Metadata validation (required columns, null values)
+- Directory structure validation
+- File hash verification
+- Comprehensive validation reports
+
+### Dataset Folder Structure
+
+```
+datasets/
+├── raw/                    # Raw downloaded datasets
+├── processed/              # Processed and preprocessed data
+├── lung_cancer/           # Lung cancer datasets
+│   └── lidc_idri/
+├── breast_cancer/         # Breast cancer datasets
+│   └── cbis_ddsm/
+└── skin_cancer/           # Skin cancer datasets
+    └── isic_dicm_17k/
+```
+
+### Usage Examples
+
+**Download a dataset:**
+```bash
+python datasets/download_datasets.py --dataset isic_dicm_17k
+```
+
+**Load a dataset:**
+```bash
+python datasets/dataset_loader.py --dataset skin
+```
+
+**Validate a dataset:**
+```bash
+python datasets/dataset_validator.py --dataset isic
+```
+
+For detailed dataset information, see `DATASETS.md`.
 
 ## Architecture
 
