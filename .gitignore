@@ -52,8 +52,10 @@ Thumbs.db
 uploads/
 static/uploads/
 
-# AI Models (root level only)
+# AI Models (root level only, but allow vision and ct subdirectories)
 /models/
+!/models/vision/
+!/models/ct/
 *.pth
 *.pt
 *.pkl

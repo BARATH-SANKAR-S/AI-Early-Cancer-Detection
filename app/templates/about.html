@@ -1,32 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container text-center">
-        <h1>About Our Project</h1>
-        <p>Revolutionizing Cancer Detection with Artificial Intelligence</p>
+<!-- Hero Section (Hospital Red Banner) -->
+<section class="hero-hospital">
+    <div class="container text-center position-relative">
+        <span class="badge bg-white text-danger px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+            <i class="bi bi-hospital me-1"></i> Hospital AI Research &amp; Clinical Center
+        </span>
+        <h1>About Our Medical AI System</h1>
+        <p>Revolutionizing Early Cancer Detection &amp; Risk Prediction across Erode District</p>
     </div>
 </section>
 
 <!-- About Content -->
 <section class="py-5">
     <div class="container">
-        <div class="row align-items-center mb-5">
+        <div class="row align-items-center mb-5 g-4">
             <div class="col-lg-6">
-                <h2 class="section-title">Our Mission</h2>
-                <p class="lead">To provide accessible, accurate, and early cancer detection services to the people of Erode District using cutting-edge artificial intelligence technology.</p>
-                <p>We believe that early detection saves lives. Our AI-powered system analyzes medical imaging and patient data to identify potential cancer risks at their earliest stages, enabling timely intervention and improved treatment outcomes.</p>
+                <h2 class="section-title-hospital">Clinical Mission</h2>
+                <p class="lead text-dark fw-bold mt-3">To provide accessible, accurate, and early cancer detection services to the people of Erode District using cutting-edge artificial intelligence.</p>
+                <p class="text-muted">We believe early diagnosis saves lives. Our hospital AI platform evaluates medical imaging (MRI, CT scans, Chest X-rays, Dermoscopy) and clinical risk factors to detect cancer at early treatable stages, empowering clinicians and patients.</p>
             </div>
             <div class="col-lg-6">
-                <div class="card bg-light p-4">
-                    <h4 class="mb-3">Key Objectives</h4>
-                    <ul class="list-unstyled">
-                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Provide free cancer screening services</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Achieve 95%+ detection accuracy</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Reduce diagnosis time by 50%</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Serve underserved communities in Erode District</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i> Integrate with local healthcare infrastructure</li>
+                <div class="card card-hospital p-4" style="border-top: 4px solid var(--primary-red); background: var(--hospital-red-50);">
+                    <h4 class="mb-3 text-danger fw-bold"><i class="bi bi-bullseye me-2"></i>Key Clinical Objectives</h4>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-danger me-2"></i> Free screening for community patients in Erode District</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-danger me-2"></i> 95%+ Multi-Modal Diagnostic Accuracy</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-danger me-2"></i> Real-time Grad-CAM Heatmap Explainability</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-danger me-2"></i> Instant Automated PDF Medical Diagnostic Reports</li>
+                        <li class="mb-3"><i class="bi bi-check-circle-fill text-danger me-2"></i> Integrated Doctor-Patient Appointment Scheduling</li>
                     </ul>
                 </div>
             </div>
@@ -34,34 +37,37 @@
         
         <div class="row mt-5">
             <div class="col-lg-12">
-                <h2 class="section-title text-center mb-5">Technology Stack</h2>
+                <div class="text-center mb-5">
+                    <h2 class="section-title-hospital">Deep Learning Architecture</h2>
+                    <p class="section-subtitle-hospital">State-of-the-art frameworks driving our hospital AI models</p>
+                </div>
                 <div class="row g-4">
                     <div class="col-md-3">
-                        <div class="card feature-card p-3 text-center">
-                            <i class="bi bi-cpu feature-icon"></i>
-                            <h5>PyTorch</h5>
-                            <p class="small text-muted">Deep Learning Framework</p>
+                        <div class="card card-hospital p-4 text-center">
+                            <i class="bi bi-cpu text-danger fs-1 mb-2"></i>
+                            <h5 class="fw-bold">PyTorch</h5>
+                            <p class="small text-muted mb-0">Deep Learning Neural Engine</p>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card feature-card p-3 text-center">
-                            <i class="bi bi-robot feature-icon"></i>
-                            <h5>Transformers</h5>
-                            <p class="small text-muted">NLP & Vision Models</p>
+                        <div class="card card-hospital p-4 text-center">
+                            <i class="bi bi-eye text-danger fs-1 mb-2"></i>
+                            <h5 class="fw-bold">Vision Transformer</h5>
+                            <p class="small text-muted mb-0">ViT Self-Attention MRI Classifier</p>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card feature-card p-3 text-center">
-                            <i class="bi bi-image feature-icon"></i>
-                            <h5>OpenCV</h5>
-                            <p class="small text-muted">Image Processing</p>
+                        <div class="card card-hospital p-4 text-center">
+                            <i class="bi bi-diagram-3 text-danger fs-1 mb-2"></i>
+                            <h5 class="fw-bold">EfficientNet</h5>
+                            <p class="small text-muted mb-0">B3 &amp; B4 Scale CNN Networks</p>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="card feature-card p-3 text-center">
-                            <i class="bi bi-database feature-icon"></i>
-                            <h5>SQLite</h5>
-                            <p class="small text-muted">Data Management</p>
+                        <div class="card card-hospital p-4 text-center">
+                            <i class="bi bi-fire text-danger fs-1 mb-2"></i>
+                            <h5 class="fw-bold">Grad-CAM XAI</h5>
+                            <p class="small text-muted mb-0">Visual Heatmap Localization</p>
                         </div>
                     </div>
                 </div>
@@ -71,38 +77,41 @@
 </section>
 
 <!-- Team Section -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background-color: var(--hospital-red-50);">
     <div class="container">
-        <h2 class="section-title text-center mb-5">Our Team</h2>
+        <div class="text-center mb-5">
+            <h2 class="section-title-hospital">Hospital Clinical Team</h2>
+            <p class="section-subtitle-hospital">Multidisciplinary expertise in AI, Oncology, and Radiology</p>
+        </div>
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card feature-card p-4 text-center">
+                <div class="card card-hospital p-4 text-center">
                     <div class="mb-3">
-                        <i class="bi bi-person-circle display-4 text-primary"></i>
+                        <i class="bi bi-person-badge-fill fs-1 text-danger"></i>
                     </div>
-                    <h5>Dr. Research Team</h5>
-                    <p class="text-muted">AI Researchers & Data Scientists</p>
-                    <p class="small">Leading the development of advanced cancer detection algorithms.</p>
+                    <h5 class="fw-bold">AI Research Division</h5>
+                    <p class="text-danger fw-bold small">Deep Learning Scientists</p>
+                    <p class="small text-muted mb-0">Engineered ViT, ResNet50, and EfficientNet diagnostic pipelines.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card p-4 text-center">
+                <div class="card card-hospital p-4 text-center">
                     <div class="mb-3">
-                        <i class="bi bi-person-circle display-4 text-success"></i>
+                        <i class="bi bi-heart-pulse-fill fs-1 text-danger"></i>
                     </div>
-                    <h5>Medical Professionals</h5>
-                    <p class="text-muted">Oncologists & Radiologists</p>
-                    <p class="small">Providing medical expertise and validating AI predictions.</p>
+                    <h5 class="fw-bold">Medical Specialists</h5>
+                    <p class="text-danger fw-bold small">Oncologists &amp; Radiologists</p>
+                    <p class="small text-muted mb-0">Clinical validation and ground-truth verification of AI heatmaps.</p>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card feature-card p-4 text-center">
+                <div class="card card-hospital p-4 text-center">
                     <div class="mb-3">
-                        <i class="bi bi-person-circle display-4 text-info"></i>
+                        <i class="bi bi-hospital-fill fs-1 text-danger"></i>
                     </div>
-                    <h5>Healthcare Partners</h5>
-                    <p class="text-muted">Local Hospitals & Clinics</p>
-                    <p class="small">Collaborating to integrate AI solutions into healthcare workflows.</p>
+                    <h5 class="fw-bold">Hospital Network</h5>
+                    <p class="text-danger fw-bold small">Erode District Care Units</p>
+                    <p class="small text-muted mb-0">Facilitating rapid appointment scheduling and patient follow-up.</p>
                 </div>
             </div>
         </div>

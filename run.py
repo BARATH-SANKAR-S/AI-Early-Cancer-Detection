@@ -1,6 +1,8 @@
+import os
+os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
+
 from app import create_app, db
 from app.models import User, Patient, Doctor, ClinicalData, MedicalImage, PredictionHistory, Report
-import os
 
 app = create_app(os.getenv('FLASK_CONFIG', 'development'))
 

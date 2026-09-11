@@ -33,15 +33,16 @@
                                     <th>Result</th>
                                     <th>Confidence</th>
                                     <th>Risk Level</th>
+                                    <th>Clinical Review</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for prediction in predictions %}
                                 <tr>
-                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td><small>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</small></td>
                                     <td>
-                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}">
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}" class="fw-bold text-decoration-none">
                                             {{ prediction.patient.full_name }}
                                         </a>
                                     </td>
@@ -49,31 +50,88 @@
                                         <span class="badge bg-info">{{ prediction.cancer_type|capitalize }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
-                                            {{ prediction.prediction_result|capitalize }}
+                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' or (prediction.additional_data and prediction.additional_data.get('is_malignant')) else 'success' }}">
+                                            {{ prediction.additional_data.get('label', prediction.prediction_result)|capitalize if prediction.additional_data else prediction.prediction_result|capitalize }}
                                         </span>
                                     </td>
                                     <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
                                     <td>
-                                        {% if prediction.risk_level %}
-                                        <span class="badge bg-{{ 'danger' if prediction.risk_level == 'high' else 'warning' if prediction.risk_level == 'medium' else 'success' }}">
-                                            {{ prediction.risk_level|capitalize }}
+                                        {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
+                                        {% if risk %}
+                                        <span class="badge bg-{{ 'danger' if risk == 'high' else 'warning text-dark' if risk == 'medium' else 'success' }}">
+                                            {{ '⚠ High' if risk == 'high' else '◑ Medium' if risk == 'medium' else '✓ Low' if risk == 'low' else risk|capitalize }}
                                         </span>
                                         {% else %}
                                         <span class="text-muted">-</span>
                                         {% endif %}
                                     </td>
                                     <td>
+                                        {% if prediction.doctor_notes %}
+                                            {% set latest_note = prediction.doctor_notes[-1] %}
+                                            <span class="badge bg-{{ 'success' if latest_note.status == 'approved' else 'warning text-dark' if latest_note.status == 'rescan' else 'danger' if latest_note.status == 'flagged' else 'secondary' }}">
+                                                {{ latest_note.status|upper }}
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
                                         {% if prediction.medical_image %}
-                                        <a href="{{ prediction.medical_image.file_path }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-image"></i> View
+                                        <a href="{{ prediction.medical_image.file_path }}" target="_blank" class="btn btn-sm btn-outline-primary me-1" title="View Scan">
+                                            <i class="bi bi-image"></i>
                                         </a>
                                         {% endif %}
-                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}" class="btn btn-sm btn-outline-secondary">
-                                            <i class="bi bi-person"></i> Patient
+                                        <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-sm btn-outline-danger me-1" title="Download Report">
+                                            <i class="bi bi-file-earmark-pdf"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-outline-success me-1" data-bs-toggle="modal" data-bs-target="#quickReviewModal{{ prediction.id }}" title="Clinical Review">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}" class="btn btn-sm btn-outline-secondary" title="Patient Profile">
+                                            <i class="bi bi-person"></i>
                                         </a>
                                     </td>
                                 </tr>
+
+                                <!-- Quick Review Modal -->
+                                <div class="modal fade" id="quickReviewModal{{ prediction.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <form method="POST" action="{{ url_for('dashboard.add_doctor_note', prediction_id=prediction.id) }}">
+                                                <div class="modal-header bg-primary text-white">
+                                                    <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Review: {{ prediction.patient.full_name }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Scan & Prediction:</label>
+                                                        <p class="text-muted mb-0">
+                                                            {{ prediction.cancer_type|capitalize }} &bull; AI: <strong>{{ prediction.prediction_result|capitalize }}</strong> ({{ "%.1f"|format(prediction.confidence_score * 100) }}%)
+                                                        </p>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Review Status:</label>
+                                                        <select name="status" class="form-select" required>
+                                                            <option value="approved">Approved / Confirmed</option>
+                                                            <option value="flagged">Flagged / Secondary Opinion</option>
+                                                            <option value="rescan">Rescan Recommended</option>
+                                                            <option value="pending">Under Review</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Clinical Notes:</label>
+                                                        <textarea name="note_text" class="form-control" rows="3" required
+                                                                  placeholder="Enter clinical assessment or recommendations..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-primary">Save Review</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                                 {% endfor %}
                             </tbody>
                         </table>

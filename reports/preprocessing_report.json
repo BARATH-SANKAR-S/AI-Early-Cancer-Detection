@@ -1,0 +1,138 @@
+{
+  "configuration": {
+    "image_size": [
+      224,
+      224
+    ],
+    "batch_size": 32,
+    "random_seed": 42,
+    "train_val_ratio": 0.8,
+    "num_classes": 4,
+    "class_names": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "class_to_index": {
+      "glioma": 0,
+      "meningioma": 1,
+      "notumor": 2,
+      "pituitary": 3
+    },
+    "index_to_class": {
+      "0": "glioma",
+      "1": "meningioma",
+      "2": "notumor",
+      "3": "pituitary"
+    },
+    "augmentation_enabled": true,
+    "rotation_range": 15,
+    "horizontal_flip": true,
+    "vertical_flip": false,
+    "brightness_range": [
+      0.8,
+      1.2
+    ],
+    "contrast_range": [
+      0.8,
+      1.2
+    ],
+    "model_name": "google/vit-base-patch16-224",
+    "skip_corrupted": true,
+    "skip_duplicates": true,
+    "supported_formats": [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".bmp"
+    ]
+  },
+  "dataset_statistics": {
+    "training_image_count": 1120,
+    "validation_image_count": 240,
+    "test_image_count": 240,
+    "total_images": 1600,
+    "image_size": [
+      224,
+      224
+    ],
+    "num_classes": 4,
+    "class_names": [
+      "glioma",
+      "meningioma",
+      "notumor",
+      "pituitary"
+    ],
+    "class_to_index": {
+      "glioma": 0,
+      "meningioma": 1,
+      "notumor": 2,
+      "pituitary": 3
+    },
+    "index_to_class": {
+      "0": "glioma",
+      "1": "meningioma",
+      "2": "notumor",
+      "3": "pituitary"
+    }
+  },
+  "class_distribution": {
+    "training": {
+      "glioma": 280,
+      "meningioma": 280,
+      "notumor": 280,
+      "pituitary": 280
+    },
+    "validation": {
+      "glioma": 60,
+      "meningioma": 60,
+      "notumor": 60,
+      "pituitary": 60
+    },
+    "test": {
+      "glioma": 60,
+      "meningioma": 60,
+      "notumor": 60,
+      "pituitary": 60
+    }
+  },
+  "preprocessing_info": {
+    "augmentation_enabled": true,
+    "augmentation_parameters": {
+      "rotation_range": 15,
+      "horizontal_flip": true,
+      "vertical_flip": false,
+      "brightness_range": [
+        0.8,
+        1.2
+      ],
+      "contrast_range": [
+        0.8,
+        1.2
+      ]
+    },
+    "normalization_method": "basic_minmax",
+    "model_name": "google/vit-base-patch16-224"
+  },
+  "data_shapes": {
+    "training_images": [
+      1120,
+      224,
+      224,
+      3
+    ],
+    "validation_images": [
+      240,
+      224,
+      224,
+      3
+    ],
+    "test_images": [
+      240,
+      224,
+      224,
+      3
+    ]
+  }
+}

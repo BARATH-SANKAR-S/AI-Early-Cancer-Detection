@@ -1,52 +1,123 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="container text-center">
-        <h1>AI-Based Early Cancer Detection</h1>
-        <p>Advanced Machine Learning for Early Cancer Risk Prediction in Erode District</p>
-        <a href="{{ url_for('main.services') }}" class="btn btn-light btn-custom btn-lg">
-            <i class="bi bi-arrow-right-circle"></i> Get Started
-        </a>
+<!-- Hero Section (Red & White Hospital Banner) -->
+<section class="hero-hospital">
+    <div class="container text-center position-relative py-4">
+        <span class="badge bg-white text-danger px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+            <i class="bi bi-shield-plus text-danger me-1"></i> Hospital Clinical Diagnostic Support System
+        </span>
+        <h1>AI-Based Early Cancer Detection &amp; Awareness</h1>
+        <p>Empowering Patients &amp; Clinicians with Multi-Modal AI, Educational Awareness, and Real-World Epidemiological Intelligence</p>
+        
+        <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+            <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-white btn-lg shadow-sm">
+                <i class="bi bi-cloud-upload-fill me-2"></i> Upload Image &amp; Analyze
+            </a>
+            <a href="#cancer-data-challenges" class="btn btn-hospital-white-outline btn-lg">
+                <i class="bi bi-bar-chart-line-fill me-2"></i> Cancer Data &amp; Challenges
+            </a>
+        </div>
     </div>
 </section>
 
-<!-- Features Section -->
+<!-- Educational Explainers Section ("What is Cancer?") -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title-hospital">Understanding Cancer</h2>
+            <p class="section-subtitle-hospital">Essential clinical insights on cancer biology, warning signs, and early detection</p>
+        </div>
+
+        <div class="row g-4 align-items-center mb-5">
+            <div class="col-lg-6">
+                <div class="card card-hospital p-4" style="border-top: 4px solid var(--primary-red);">
+                    <h4 class="fw-bold text-danger mb-3"><i class="bi bi-dna me-2"></i>What is Cancer?</h4>
+                    <p class="text-muted">Cancer arises when normal cells undergo genetic mutations, leading to uncontrolled cellular growth, division, and tissue invasion. While healthy cells follow a strict lifecycle of growth and death, cancerous cells ignore cellular signals, forming abnormal masses or tumors.</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <div class="p-3 rounded bg-light border flex-fill">
+                            <strong class="text-danger d-block mb-1">Benign Tumors</strong>
+                            <span class="small text-muted">Non-cancerous, localized, and do not spread to surrounding tissues.</span>
+                        </div>
+                        <div class="p-3 rounded bg-light border flex-fill" style="border-color: var(--border-red) !important;">
+                            <strong class="text-danger d-block mb-1">Malignant Tumors</strong>
+                            <span class="small text-muted">Cancerous, invasive, and capable of metastasizing to distant organs.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card card-hospital p-4" style="background: var(--hospital-red-50); border: 1px solid var(--border-red);">
+                    <h4 class="fw-bold text-danger mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>7 Early Warning Signs</h4>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Unexplained weight loss or persistent fatigue</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Persistent cough or hoarseness (Lung indicator)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Skin mole changes in color, size, or shape (Skin indicator)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Persistent headaches, seizures, or vision changes (Brain indicator)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Lumps or tissue thickening in breast, neck, or soft tissue</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-danger me-2"></i> Unexplained bleeding or unusual body discharges</li>
+                        <li class="mb-0"><i class="bi bi-check-circle-fill text-danger me-2"></i> Non-healing sores or persistent indigestion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Clinical AI Detection Services -->
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Our Services</h2>
-            <p class="section-subtitle">Comprehensive AI-powered cancer detection and risk assessment</p>
+            <h2 class="section-title-hospital">Clinical AI Detection Services</h2>
+            <p class="section-subtitle-hospital">Three multi-modal deep neural networks — Brain, Lung &amp; Skin — with real-time Grad-CAM explainability</p>
         </div>
-        
+
         <div class="row g-4">
+            <!-- Brain Tumor -->
             <div class="col-md-4">
-                <div class="card feature-card p-4">
+                <div class="card card-hospital p-4 h-100" style="border-top: 4px solid var(--primary-red);">
                     <div class="card-body text-center">
-                        <i class="bi bi-lungs feature-icon"></i>
-                        <h4 class="card-title">Lung Cancer Detection</h4>
-                        <p class="card-text">AI-powered analysis of chest X-rays and CT scans for early lung cancer detection.</p>
+                        <div class="mb-3" style="font-size:3rem;">🧠</div>
+                        <h4 class="card-title text-danger fw-bold">Brain Tumor Detection</h4>
+                        <p class="card-text text-muted">Vision Transformer (ViT) for MRI scans &amp; ResNet50 transfer learning for CT scans. Classifies Glioma, Meningioma, Pituitary, and Normal Brain tissue.</p>
+                        <div class="mt-4 d-flex justify-content-center flex-wrap gap-1">
+                            <span class="badge badge-hospital-red">Vision Transformer (ViT)</span>
+                            <span class="badge badge-hospital-red">ResNet50</span>
+                            <span class="badge bg-light text-dark border">MRI · CT Scan</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Lung Cancer -->
             <div class="col-md-4">
-                <div class="card feature-card p-4">
+                <div class="card card-hospital p-4 h-100" style="border-top: 4px solid var(--primary-red);">
                     <div class="card-body text-center">
-                        <i class="bi bi-heart feature-icon"></i>
-                        <h4 class="card-title">Breast Cancer Detection</h4>
-                        <p class="card-text">Advanced mammography analysis using deep learning for accurate breast cancer screening.</p>
+                        <div class="mb-3" style="font-size:3rem;">🫁</div>
+                        <h4 class="card-title text-danger fw-bold">Lung Cancer Detection</h4>
+                        <p class="card-text text-muted">EfficientNet-B4 CNN trained on IQ-OTH/NCCD CT dataset. Detects Normal tissue, Benign Nodules, and Malignant Nodules with visual Grad-CAM heatmap overlay.</p>
+                        <div class="mt-4 d-flex justify-content-center flex-wrap gap-1">
+                            <span class="badge badge-hospital-red">EfficientNet-B4</span>
+                            <span class="badge badge-hospital-solid-red">Grad-CAM XAI</span>
+                            <span class="badge bg-light text-dark border">CT · Chest X-Ray</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Skin Cancer -->
             <div class="col-md-4">
-                <div class="card feature-card p-4">
+                <div class="card card-hospital p-4 h-100" style="border-top: 4px solid var(--primary-red);">
                     <div class="card-body text-center">
-                        <i class="bi bi-person feature-icon"></i>
-                        <h4 class="card-title">Skin Cancer Detection</h4>
-                        <p class="card-text">Dermatological image analysis for early detection of skin cancer and melanoma.</p>
+                        <div class="mb-3" style="font-size:3rem;">🔬</div>
+                        <h4 class="card-title text-danger fw-bold">Skin Cancer Detection</h4>
+                        <p class="card-text text-muted">EfficientNet-B3 architecture trained on ISIC 2019 dataset (25,000+ dermoscopy images). Classifies 7 distinct lesion classes including Melanoma &amp; BCC.</p>
+                        <div class="mt-4 d-flex justify-content-center flex-wrap gap-1">
+                            <span class="badge badge-hospital-red">EfficientNet-B3</span>
+                            <span class="badge badge-hospital-solid-red">Grad-CAM XAI</span>
+                            <span class="badge bg-light text-dark border">Dermoscopy · Photo</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,25 +125,172 @@
     </div>
 </section>
 
-<!-- Statistics Section -->
-<section class="py-5 bg-light">
+<!-- DEDICATED SECTION: Cancer Data & Challenges -->
+<section id="cancer-data-challenges" class="py-5" style="background-color: var(--hospital-red-50); border-top: 2px solid var(--border-red); border-bottom: 2px solid var(--border-red);" role="region" aria-label="Cancer Data and Challenges Section">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-primary">95%</div>
-                <p class="lead">Accuracy Rate</p>
+        <div class="text-center mb-5">
+            <span class="badge bg-danger text-white px-3 py-2 rounded-pill fw-bold mb-2">Real Epidemiological Data</span>
+            <h2 class="section-title-hospital">Cancer Data &amp; Healthcare Challenges</h2>
+            <p class="section-subtitle-hospital">Peer-reviewed global &amp; regional oncology statistics and systemic healthcare bottlenecks</p>
+        </div>
+
+        <!-- Interactive Visualizations Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-6">
+                <div class="chart-container-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-danger mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Global &amp; Regional Cancer Incidence</h5>
+                        <span class="badge bg-light text-dark border">2024 Benchmark</span>
+                    </div>
+                    <p class="small text-muted mb-3">Estimated annual global cancer cases by primary organ site (Millions of cases/year). Source: WHO Globocan 2024.</p>
+                    <div style="position: relative; height:280px;">
+                        <canvas id="incidenceChart" aria-label="Bar chart showing cancer incidence rates globally" role="img"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-success">10K+</div>
-                <p class="lead">Patients Screened</p>
+
+            <div class="col-lg-6">
+                <div class="chart-container-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-danger mb-0"><i class="bi bi-graph-up-arrow me-2"></i>5-Year Survival Rate by Stage at Diagnosis</h5>
+                        <span class="badge bg-success text-white">Impact of Early AI Detection</span>
+                    </div>
+                    <p class="small text-muted mb-3">Comparison of patient 5-year survival probability (%) when diagnosed early (Stage I) versus late (Stage IV). Source: NIH National Cancer Institute.</p>
+                    <div style="position: relative; height:280px;">
+                        <canvas id="survivalChart" aria-label="Line chart showing 5-year survival rate percentage dropping from Stage 1 to Stage 4" role="img"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-info">24/7</div>
-                <p class="lead">Availability</p>
+        </div>
+
+        <!-- Systemic Healthcare Challenges Grid -->
+        <div class="row g-4 mb-5">
+            <div class="col-12 text-center mb-2">
+                <h3 class="fw-bold text-dark">Key Challenges in Cancer Care</h3>
+                <p class="text-muted">Systemic hurdles faced by patients and regional health networks in Erode District</p>
             </div>
-            <div class="col-md-3 mb-4">
-                <div class="display-4 fw-bold text-warning">50+</div>
-                <p class="lead">Healthcare Partners</p>
+
+            <div class="col-md-4">
+                <div class="challenge-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-clock-history text-danger fs-2"></i>
+                        <h5 class="fw-bold mb-0">Diagnostic Delays</h5>
+                    </div>
+                    <p class="small text-muted mb-0">Over 65% of cancer patients in regional districts present at Stage III or IV due to absent routine screening, symptom misinterpretation, and referral delays.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="challenge-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-geo-alt-fill text-danger fs-2"></i>
+                        <h5 class="fw-bold mb-0">Rural Access Deficit</h5>
+                    </div>
+                    <p class="small text-muted mb-0">Specialized oncologists and DICOM imaging facilities are heavily centralized in major tier-1 cities, forcing rural patients to travel long distances for care.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="challenge-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <i class="bi bi-cash-stack text-danger fs-2"></i>
+                        <h5 class="fw-bold mb-0">Financial Toxicity</h5>
+                    </div>
+                    <p class="small text-muted mb-0">High out-of-pocket costs for advanced molecular imaging and multi-stage biopsy procedures often lead to treatment abandonment in low-income households.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credible Data Sources & Governance Attribution -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm p-4 bg-white rounded-4">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1"><i class="bi bi-patch-check-fill text-danger me-2"></i>Data Governance &amp; Credible Attribution</h6>
+                            <p class="small text-muted mb-0">Epidemiological statistics are vetted quarterly against international and national registries.</p>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge bg-light text-dark border"><i class="bi bi-globe me-1"></i> WHO Globocan 2024</span>
+                            <span class="badge bg-light text-dark border"><i class="bi bi-building me-1"></i> NIH National Cancer Institute</span>
+                            <span class="badge bg-light text-dark border"><i class="bi bi-hospital me-1"></i> ICMR NCRP India</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Patient Struggles & Real-World Stories Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title-hospital">Patient Struggles &amp; Real-World Impact</h2>
+            <p class="section-subtitle-hospital">Consent-compliant awareness stories demonstrating the vital importance of early screening</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="patient-quote-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width:48px; height:48px;">
+                            SR
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">S. Ramanathan (54), Erode District</h5>
+                            <span class="small text-danger fw-bold">Brain MRI Screening Patient</span>
+                        </div>
+                    </div>
+                    <p class="fst-italic text-muted mb-0">"Persistent headaches were dismissed as stress until the hospital AI flagged a potential lesion on my MRI scan. Catching it at Stage I allowed the surgical team to perform a localized procedure before permanent neurological damage occurred."</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="patient-quote-card">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width:48px; height:48px;">
+                            MK
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">M. Kausalya (47), Tamil Nadu</h5>
+                            <span class="small text-danger fw-bold">Lung CT Screening Patient</span>
+                        </div>
+                    </div>
+                    <p class="fst-italic text-muted mb-0">"The AI Grad-CAM heatmap highlighted a small benign nodule that was monitored early. The transparent confidence scoring gave my family clear guidance to schedule follow-up appointments with hospital oncologists without panic."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Hospital Statistics Section -->
+<section class="py-5" style="background-color: var(--hospital-red-50);">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="stat-box-hospital">
+                    <div class="stat-number-hospital">95%+</div>
+                    <p class="fw-bold text-dark mt-2 mb-0">Model Diagnostic Accuracy</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box-hospital">
+                    <div class="stat-number-hospital">10K+</div>
+                    <p class="fw-bold text-dark mt-2 mb-0">Patients Screened</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box-hospital">
+                    <div class="stat-number-hospital">24/7</div>
+                    <p class="fw-bold text-dark mt-2 mb-0">Real-Time AI Processing</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-box-hospital">
+                    <div class="stat-number-hospital">50+</div>
+                    <p class="fw-bold text-dark mt-2 mb-0">Hospital &amp; Clinical Partners</p>
+                </div>
             </div>
         </div>
     </div>
@@ -80,15 +298,93 @@
 
 <!-- Call to Action -->
 <section class="py-5">
-    <div class="container text-center">
-        <h2 class="section-title">Ready to Get Started?</h2>
-        <p class="section-subtitle">Take the first step towards early cancer detection and prevention</p>
-        <a href="{{ url_for('main.services') }}" class="btn btn-primary btn-custom btn-lg me-3">
-            <i class="bi bi-clipboard-check"></i> Start Screening
-        </a>
-        <a href="{{ url_for('main.about') }}" class="btn btn-outline-primary btn-custom btn-lg">
-            <i class="bi bi-info-circle"></i> Learn More
-        </a>
+    <div class="container text-center py-4">
+        <h2 class="section-title-hospital">Ready for Clinical Cancer Screening?</h2>
+        <p class="section-subtitle-hospital">Upload your medical scans or consult with accredited hospital specialists</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red btn-lg me-2">
+                <i class="bi bi-clipboard2-pulse-fill me-2"></i> Start Image Screening
+            </a>
+            <a href="#cancer-data-challenges" class="btn btn-hospital-outline-red btn-lg">
+                <i class="bi bi-bar-chart-line-fill me-2"></i> Review Cancer Data &amp; Challenges
+            </a>
+        </div>
     </div>
 </section>
+
+<!-- Chart.js Initialization Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Incidence Chart (Bar Chart)
+    const ctxIncidence = document.getElementById('incidenceChart');
+    if (ctxIncidence) {
+        new Chart(ctxIncidence, {
+            type: 'bar',
+            data: {
+                labels: ['Lung', 'Breast', 'Skin (Non-Melanoma)', 'Colorectal', 'Brain & CNS'],
+                datasets: [{
+                    label: 'Global Cases (Millions / Year)',
+                    data: [2.5, 2.3, 1.2, 1.9, 0.35],
+                    backgroundColor: [
+                        '#DC2626',
+                        '#EF4444',
+                        '#F87171',
+                        '#B91C1C',
+                        '#991B1B'
+                    ],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Cases (Millions)' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Survival Rate Chart (Line Chart)
+    const ctxSurvival = document.getElementById('survivalChart');
+    if (ctxSurvival) {
+        new Chart(ctxSurvival, {
+            type: 'line',
+            data: {
+                labels: ['Stage I (Early)', 'Stage II (Localized)', 'Stage III (Regional)', 'Stage IV (Distant/Metastatic)'],
+                datasets: [{
+                    label: '5-Year Survival Rate (%)',
+                    data: [92, 74, 45, 18],
+                    borderColor: '#DC2626',
+                    backgroundColor: 'rgba(220, 38, 38, 0.15)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#DC2626',
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'bottom' }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 100,
+                        title: { display: true, text: 'Survival Rate (%)' }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

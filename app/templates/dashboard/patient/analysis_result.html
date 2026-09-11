@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ── Header Bar ──────────────────────────────────────────────────── -->
+<div style="background: var(--red-gradient); padding: 28px 0 32px;">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div>
+        <span class="badge bg-white text-danger fw-bold px-3 py-2 rounded-pill mb-2">
+          <i class="bi bi-cpu-fill me-1"></i> AI Diagnostic Report
+        </span>
+        <h1 class="text-white fw-bold mb-1" style="font-size:1.8rem;">Analysis Results</h1>
+        <p class="text-white-50 mb-0 small">
+          {{ medical_image.image_type | upper }} scan &middot;
+          Analyzed {{ prediction.prediction_date.strftime('%d %b %Y, %I:%M %p') if prediction.prediction_date else 'N/A' }}
+          &middot; Model: <span class="text-white">{{ prediction.model_version or 'AI Model' }}</span>
+        </p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-hospital-white">
+          <i class="bi bi-arrow-left me-1"></i> Back to History
+        </a>
+        <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-hospital-white-outline">
+          <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF Report
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- ── LEFT COLUMN: Image + Heatmap ──────────────────────────── -->
+    <div class="col-lg-4">
+
+      <!-- Uploaded Image Card -->
+      <div class="card card-hospital mb-4">
+        <div class="card-header bg-white border-bottom border-danger-subtle py-3">
+          <h6 class="mb-0 fw-bold text-danger"><i class="bi bi-image me-2"></i>Uploaded Scan</h6>
+        </div>
+        <div class="card-body p-3 text-center">
+          <img src="{{ medical_image.file_path }}"
+               alt="Medical scan"
+               class="img-fluid rounded-3 shadow-sm"
+               style="max-height: 280px; object-fit: contain; background:#f1f5f9;"
+               onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%23f1f5f9%22 width=%22200%22 height=%22200%22/><text x=%2250%%22 y=%2250%%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 fill=%22%2394a3b8%22 font-size=%2240%22>🔬</text></svg>'">
+          <div class="mt-3">
+            <span class="badge bg-light text-dark border me-1">{{ medical_image.image_type | upper }}</span>
+            <span class="badge bg-light text-dark border">{{ (medical_image.file_size / 1024) | round(1) }} KB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grad-CAM Heatmap Card -->
+      {% if prediction.additional_data and prediction.additional_data.get('heatmap_b64') %}
+      <div class="card card-hospital">
+        <div class="card-header bg-white border-bottom border-danger-subtle py-3">
+          <h6 class="mb-0 fw-bold text-danger"><i class="bi bi-fire me-2"></i>Grad-CAM Heatmap
+            <span class="badge bg-danger-subtle text-danger ms-2 small">XAI Explanation</span>
+          </h6>
+        </div>
+        <div class="card-body p-3 text-center">
+          <img src="{{ prediction.additional_data.get('heatmap_b64') }}"
+               alt="Grad-CAM Heatmap"
+               class="img-fluid rounded-3 shadow-sm"
+               style="max-height: 280px; object-fit: contain;">
+          <p class="small text-muted mt-2 mb-0">Red regions indicate areas the AI focused on most during classification.</p>
+        </div>
+      </div>
+      {% else %}
+      <div class="card card-hospital border-dashed">
+        <div class="card-body text-center py-4 text-muted">
+          <i class="bi bi-eye-slash fs-2 mb-2 d-block"></i>
+          <p class="small mb-0">Heatmap not available for this scan type.</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ── RIGHT COLUMN: Diagnosis + Charts ───────────────────────── -->
+    <div class="col-lg-8">
+
+      <!-- Main Diagnosis Card -->
+      {% set risk = prediction.risk_level | lower if prediction.risk_level else 'unknown' %}
+      {% set risk_color = '#DC2626' if risk == 'high' else ('#D97706' if risk == 'medium' else '#16A34A') %}
+      {% set risk_icon  = 'exclamation-triangle-fill' if risk == 'high' else ('exclamation-circle-fill' if risk == 'medium' else 'check-circle-fill') %}
+      {% set confidence_pct = ((prediction.confidence_score or 0) * 100) | round(1) %}
+
+      <div class="card card-hospital mb-4" style="border-top: 4px solid {{ risk_color }};">
+        <div class="card-body p-4">
+          <div class="row align-items-center g-4">
+
+            <!-- Confidence Donut -->
+            <div class="col-sm-4 text-center">
+              <div style="position:relative; width:140px; height:140px; margin:0 auto;">
+                <canvas id="confidenceRing" width="140" height="140"></canvas>
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; line-height:1.2;">
+                  <div class="fw-black" style="font-size:1.7rem; color:{{ risk_color }};">{{ confidence_pct }}%</div>
+                  <div class="small text-muted" style="font-size:0.7rem;">Confidence</div>
+                </div>
+              </div>
+              <div class="mt-2">
+                <span class="badge rounded-pill px-3 py-2 fw-bold" style="background:{{ risk_color }}20; color:{{ risk_color }}; border:1.5px solid {{ risk_color }}50;">
+                  <i class="bi bi-{{ risk_icon }} me-1"></i> {{ risk | capitalize }} Risk
+                </span>
+              </div>
+            </div>
+
+            <!-- Diagnosis Text -->
+            <div class="col-sm-8">
+              <div class="mb-1">
+                <span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill small">
+                  {{ prediction.cancer_type | replace('_', ' ') | title }}
+                </span>
+              </div>
+              <h2 class="fw-black mb-1" style="font-size:1.6rem; color:var(--text-heading);">
+                {{ prediction.prediction_result | replace('_', ' ') | title }}
+              </h2>
+              {% if prediction.additional_data and prediction.additional_data.get('label') %}
+              <p class="text-muted mb-3">{{ prediction.additional_data.get('label') }}</p>
+              {% endif %}
+
+              <div class="row g-2 text-center">
+                <div class="col-4">
+                  <div class="p-2 rounded-3 bg-light border">
+                    <div class="fw-bold text-danger" style="font-size:1.1rem;">{{ confidence_pct }}%</div>
+                    <div class="small text-muted" style="font-size:0.72rem;">Confidence</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-2 rounded-3 bg-light border">
+                    <div class="fw-bold" style="font-size:1.1rem; color:{{ risk_color }};">{{ risk | capitalize }}</div>
+                    <div class="small text-muted" style="font-size:0.72rem;">Risk Level</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="p-2 rounded-3 bg-light border">
+                    <div class="fw-bold text-dark" style="font-size:1.1rem;">
+                      {{ 'Positive' if prediction.additional_data and prediction.additional_data.get('is_malignant') else 'Negative' }}
+                    </div>
+                    <div class="small text-muted" style="font-size:0.72rem;">Malignancy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Class Probabilities Chart -->
+      {% if prediction.additional_data and prediction.additional_data.get('class_probabilities') %}
+      <div class="card card-hospital mb-4">
+        <div class="card-header bg-white border-bottom border-danger-subtle py-3">
+          <h6 class="mb-0 fw-bold text-danger">
+            <i class="bi bi-bar-chart-horizontal-fill me-2"></i>Class Probability Distribution
+          </h6>
+        </div>
+        <div class="card-body p-4">
+          <div style="position:relative; height:200px;">
+            <canvas id="probChart"></canvas>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Clinical Recommendations Card -->
+      <div class="card card-hospital mb-4" style="background: var(--hospital-red-50); border:1px solid var(--border-red);">
+        <div class="card-header py-3" style="background:transparent; border-bottom:1px solid var(--border-red);">
+          <h6 class="mb-0 fw-bold text-danger">
+            <i class="bi bi-clipboard2-pulse-fill me-2"></i>Clinical Recommendations
+          </h6>
+        </div>
+        <div class="card-body p-4">
+          {% if risk == 'high' %}
+          <div class="d-flex gap-3 mb-3">
+            <div class="flex-shrink-0"><i class="bi bi-exclamation-triangle-fill text-danger fs-4 mt-1"></i></div>
+            <div>
+              <h6 class="fw-bold text-danger mb-1">Urgent Clinical Review Required</h6>
+              <p class="text-muted small mb-0">The AI has detected a high-risk finding. Please consult with an oncologist or specialist immediately. Do not delay further evaluation.</p>
+            </div>
+          </div>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-danger me-2"></i>Schedule an urgent specialist consultation within 48 hours</li>
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-danger me-2"></i>Biopsy or confirmatory imaging may be required</li>
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-danger me-2"></i>Inform your treating doctor of this AI-flagged result</li>
+            <li class="mb-0"><i class="bi bi-arrow-right-circle-fill text-danger me-2"></i>Download and share the PDF report with your medical team</li>
+          </ul>
+          {% elif risk == 'medium' %}
+          <div class="d-flex gap-3 mb-3">
+            <div class="flex-shrink-0"><i class="bi bi-exclamation-circle-fill text-warning fs-4 mt-1"></i></div>
+            <div>
+              <h6 class="fw-bold" style="color:#D97706;" class="mb-1">Monitoring & Follow-Up Advised</h6>
+              <p class="text-muted small mb-0">The AI has detected a moderate-risk finding. Periodic follow-up and monitoring is recommended.</p>
+            </div>
+          </div>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-warning me-2"></i>Schedule a follow-up scan within 3–6 months</li>
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-warning me-2"></i>Discuss findings with your primary care physician</li>
+            <li class="mb-0"><i class="bi bi-arrow-right-circle-fill text-warning me-2"></i>Monitor for new or worsening symptoms</li>
+          </ul>
+          {% else %}
+          <div class="d-flex gap-3 mb-3">
+            <div class="flex-shrink-0"><i class="bi bi-check-circle-fill text-success fs-4 mt-1"></i></div>
+            <div>
+              <h6 class="fw-bold text-success mb-1">No Immediate Concern Detected</h6>
+              <p class="text-muted small mb-0">The AI scan result indicates a low-risk or normal finding. Continue routine annual screening.</p>
+            </div>
+          </div>
+          <ul class="list-unstyled mb-0">
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-success me-2"></i>Continue your regular annual health check-ups</li>
+            <li class="mb-2"><i class="bi bi-arrow-right-circle-fill text-success me-2"></i>Maintain a healthy lifestyle and diet</li>
+            <li class="mb-0"><i class="bi bi-arrow-right-circle-fill text-success me-2"></i>Contact your doctor if any new symptoms appear</li>
+          </ul>
+          {% endif %}
+
+          <div class="mt-4 p-3 rounded-3 bg-white border">
+            <p class="small text-muted mb-0">
+              <i class="bi bi-info-circle-fill text-danger me-1"></i>
+              <strong>Disclaimer:</strong> This AI analysis is a clinical decision support tool only. It does not replace a qualified physician's diagnosis. Always consult a licensed medical professional for clinical decisions.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="d-flex gap-3 flex-wrap">
+        <form action="{{ url_for('dashboard.analyze_image', image_id=medical_image.id) }}" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-hospital-red">
+            <i class="bi bi-arrow-clockwise me-2"></i>Re-Analyze Image
+          </button>
+        </form>
+        <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-outline-danger">
+          <i class="bi bi-file-earmark-pdf me-2"></i>Download PDF Report
+        </a>
+        <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-light border">
+          <i class="bi bi-cloud-upload me-2"></i>Upload New Image
+        </a>
+        <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-light border">
+          <i class="bi bi-clock-history me-2"></i>View Full History
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Chart.js scripts ──────────────────────────────────────────────────── -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // 1. Confidence Donut Ring
+  const ctxRing = document.getElementById('confidenceRing');
+  if (ctxRing) {
+    const conf = {{ confidence_pct }};
+    const riskColor = '{{ risk_color }}';
+    new Chart(ctxRing, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [conf, 100 - conf],
+          backgroundColor: [riskColor, '#F1F5F9'],
+          borderWidth: 0,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        cutout: '75%',
+        responsive: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+  }
+
+  // 2. Class Probabilities Horizontal Bar Chart
+  const ctxProb = document.getElementById('probChart');
+  {% if prediction.additional_data and prediction.additional_data.get('class_probabilities') %}
+  if (ctxProb) {
+    const probs = {{ prediction.additional_data.get('class_probabilities') | tojson }};
+    const labels = Object.keys(probs).map(k => k.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+    const values = Object.values(probs).map(v => Math.round(v * 100 * 10) / 10);
+    const maxIdx = values.indexOf(Math.max(...values));
+    const colors = values.map((_, i) => i === maxIdx ? '#DC2626' : '#FECACA');
+
+    new Chart(ctxProb, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Probability (%)',
+          data: values,
+          backgroundColor: colors,
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.parsed.x}%`
+            }
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            max: 100,
+            ticks: { callback: v => v + '%' },
+            grid: { color: '#F1F5F9' }
+          },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+  }
+  {% endif %}
+});
+</script>
+{% endblock %}

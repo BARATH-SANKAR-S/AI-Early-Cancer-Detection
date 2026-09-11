@@ -4,85 +4,157 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow-lg">
+
+            <!-- Role Context Banner (shows when coming from Portal) -->
+            {% if portal_role %}
+            <div class="text-center mb-4">
+                {% if portal_role == 'patient' %}
+                <div class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill mb-3"
+                    style="background:rgba(220,38,38,0.08); border:1.5px solid rgba(220,38,38,0.25);">
+                    <i class="bi bi-person-heart text-danger fs-5"></i>
+                    <span class="fw-bold text-danger">Patient Login Portal</span>
+                </div>
+                {% elif portal_role == 'doctor' %}
+                <div class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill mb-3"
+                    style="background:rgba(2,132,199,0.08); border:1.5px solid rgba(2,132,199,0.25);">
+                    <i class="bi bi-hospital fs-5" style="color:#0284C7;"></i>
+                    <span class="fw-bold" style="color:#0284C7;">Doctor Login Portal</span>
+                </div>
+                {% elif portal_role == 'admin' %}
+                <div class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-pill mb-3"
+                    style="background:rgba(124,58,237,0.08); border:1.5px solid rgba(124,58,237,0.25);">
+                    <i class="bi bi-shield-lock-fill fs-5" style="color:#7C3AED;"></i>
+                    <span class="fw-bold" style="color:#7C3AED;">Admin Login Portal</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="card card-hospital shadow-lg border-0 rounded-4">
                 <div class="card-body p-5">
+
+                    <!-- Header -->
                     <div class="text-center mb-4">
-                        <i class="bi bi-person-circle display-4 text-primary mb-3"></i>
-                        <h2 class="card-title">Login</h2>
-                        <p class="text-muted">Access your account</p>
+                        <div class="mb-3" style="font-size:2.5rem;">
+                            {% if portal_role == 'patient' %}🏥
+                            {% elif portal_role == 'doctor' %}👨‍⚕️
+                            {% elif portal_role == 'admin' %}🛡️
+                            {% else %}<i class="bi bi-heart-pulse-fill text-danger"></i>
+                            {% endif %}
+                        </div>
+                        <h2 class="fw-black text-dark mb-1" style="letter-spacing:-0.02em;">
+                            {% if portal_role == 'patient' %}Patient Login
+                            {% elif portal_role == 'doctor' %}Doctor Login
+                            {% elif portal_role == 'admin' %}Admin Login
+                            {% else %}Sign In
+                            {% endif %}
+                        </h2>
+                        <p class="text-muted small mb-0">
+                            {% if portal_role == 'patient' %}Access your medical records &amp; screening history
+                            {% elif portal_role == 'doctor' %}Clinical dashboard &amp; patient management
+                            {% elif portal_role == 'admin' %}System administration &amp; analytics
+                            {% else %}Access your Cancer Detection AI account
+                            {% endif %}
+                        </p>
                     </div>
-                    
-                    <!-- Flash Messages -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-                    
-                    <form method="POST" action="{{ url_for('auth.login') }}">
+
+                    <!-- Login Form -->
+                    <form method="POST"
+                        action="{{ url_for('auth.login') }}{% if portal_role %}?role={{ portal_role }}{% endif %}">
                         {{ form.hidden_tag() }}
-                        
+
                         <div class="mb-3">
-                            <label for="{{ form.username.id }}" class="form-label">{{ form.username.label.text }}</label>
+                            <label for="{{ form.username.id }}" class="form-label fw-semibold">{{
+                                form.username.label.text }}</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Enter username or email") }}
+                                <span class="input-group-text bg-danger-subtle border-danger-subtle">
+                                    <i class="bi bi-person-fill text-danger"></i>
+                                </span>
+                                {{ form.username(class="form-control border-danger-subtle" + (" is-invalid" if
+                                form.username.errors else ""), placeholder="Enter username or email") }}
                             </div>
                             {% if form.username.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.username.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
                             {% endif %}
                         </div>
-                        
+
                         <div class="mb-3">
-                            <label for="{{ form.password.id }}" class="form-label">{{ form.password.label.text }}</label>
+                            <label for="{{ form.password.id }}" class="form-label fw-semibold">{{
+                                form.password.label.text }}</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Enter password") }}
+                                <span class="input-group-text bg-danger-subtle border-danger-subtle">
+                                    <i class="bi bi-lock-fill text-danger"></i>
+                                </span>
+                                {{ form.password(class="form-control border-danger-subtle" + (" is-invalid" if
+                                form.password.errors else ""), placeholder="Enter password", id="passwordInput") }}
+                                <button type="button" class="btn btn-outline-secondary border-danger-subtle"
+                                    id="togglePassword" title="Show/hide password">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </button>
                             </div>
                             {% if form.password.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in form.password.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.password.errors %}{{ error }}{% endfor %}
+                            </div>
                             {% endif %}
                         </div>
-                        
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
-                            <label class="form-check-label" for="rememberMe">Remember me</label>
+
+                        <div class="mb-4 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe" name="remember">
+                                <label class="form-check-label small text-muted" for="rememberMe">Remember me</label>
+                            </div>
                         </div>
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-box-arrow-in-right"></i> Login
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-hospital-red btn-lg fw-bold">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                {% if portal_role == 'patient' %}Login as Patient
+                                {% elif portal_role == 'doctor' %}Login as Doctor
+                                {% elif portal_role == 'admin' %}Login as Admin
+                                {% else %}Sign In
+                                {% endif %}
                             </button>
                         </div>
                     </form>
-                    
-                    <div class="mt-4 text-center">
-                        <p class="mb-0">Don't have an account? 
-                            <a href="{{ url_for('auth.register') }}" class="text-primary">Register here</a>
+
+                    <hr class="my-4" style="border-color: var(--hospital-red-100);">
+
+                    <div class="text-center">
+                        <p class="mb-1 small text-muted">Don't have an account?
+                            <a href="{{ url_for('auth.register') }}" class="text-danger fw-bold">Register here</a>
                         </p>
                     </div>
                 </div>
             </div>
-            
-            <div class="text-center mt-3">
-                <a href="{{ url_for('main.index') }}" class="text-decoration-none text-muted">
-                    <i class="bi bi-arrow-left"></i> Back to Home
+
+            <!-- Navigation Links -->
+            <div class="text-center mt-4 d-flex justify-content-center gap-4">
+                <a href="{{ url_for('auth.portal') }}" class="text-decoration-none text-muted small">
+                    <i class="bi bi-grid-3x3-gap-fill me-1 text-danger"></i> Staff Portal
+                </a>
+                <a href="{{ url_for('main.index') }}" class="text-decoration-none text-muted small">
+                    <i class="bi bi-house-fill me-1 text-danger"></i> Homepage
                 </a>
             </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    // Password toggle
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function () {
+            const isText = passwordInput.type === 'text';
+            passwordInput.type = isText ? 'password' : 'text';
+            eyeIcon.className = isText ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+    }
+</script>
 {% endblock %}

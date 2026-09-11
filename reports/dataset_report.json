@@ -1,0 +1,1240 @@
+{
+  "dataset_path": ".",
+  "dataset_type": "Brain Tumor MRI Dataset",
+  "classes": [
+    "glioma",
+    "meningioma",
+    "notumor",
+    "pituitary"
+  ],
+  "class_distribution": {
+    "glioma": {
+      "training": 0,
+      "testing": 400
+    },
+    "meningioma": {
+      "training": 0,
+      "testing": 400
+    },
+    "notumor": {
+      "training": 0,
+      "testing": 400
+    },
+    "pituitary": {
+      "training": 0,
+      "testing": 400
+    }
+  },
+  "total_images": 1600,
+  "training_images": 0,
+  "testing_images": 1600,
+  "image_formats": [
+    ".jpg"
+  ],
+  "image_dimensions": [
+    "(150, 198)",
+    "(173, 201)",
+    "(174, 230)",
+    "(175, 167)",
+    "(177, 197)",
+    "(180, 218)",
+    "(192, 192)",
+    "(194, 259)",
+    "(196, 257)",
+    "(197, 229)",
+    "(200, 200)",
+    "(200, 210)",
+    "(200, 223)",
+    "(200, 234)",
+    "(200, 235)",
+    "(200, 236)",
+    "(200, 243)",
+    "(200, 248)",
+    "(200, 249)",
+    "(200, 252)",
+    "(201, 207)",
+    "(201, 210)",
+    "(201, 244)",
+    "(201, 249)",
+    "(201, 250)",
+    "(201, 251)",
+    "(202, 202)",
+    "(202, 223)",
+    "(202, 250)",
+    "(203, 243)",
+    "(203, 248)",
+    "(204, 245)",
+    "(204, 247)",
+    "(204, 249)",
+    "(205, 214)",
+    "(205, 249)",
+    "(205, 251)",
+    "(206, 244)",
+    "(206, 245)",
+    "(206, 249)",
+    "(207, 207)",
+    "(207, 225)",
+    "(207, 243)",
+    "(208, 217)",
+    "(208, 225)",
+    "(208, 242)",
+    "(208, 243)",
+    "(208, 248)",
+    "(208, 278)",
+    "(209, 225)",
+    "(209, 234)",
+    "(209, 241)",
+    "(209, 242)",
+    "(210, 201)",
+    "(210, 213)",
+    "(210, 234)",
+    "(210, 240)",
+    "(210, 264)",
+    "(211, 236)",
+    "(211, 239)",
+    "(212, 222)",
+    "(212, 236)",
+    "(212, 237)",
+    "(212, 238)",
+    "(212, 280)",
+    "(213, 236)",
+    "(213, 237)",
+    "(214, 216)",
+    "(214, 235)",
+    "(214, 236)",
+    "(215, 220)",
+    "(215, 234)",
+    "(216, 202)",
+    "(216, 216)",
+    "(216, 234)",
+    "(216, 293)",
+    "(216, 302)",
+    "(217, 232)",
+    "(217, 248)",
+    "(218, 231)",
+    "(218, 234)",
+    "(219, 211)",
+    "(219, 234)",
+    "(220, 212)",
+    "(220, 275)",
+    "(221, 228)",
+    "(221, 257)",
+    "(222, 252)",
+    "(224, 216)",
+    "(224, 219)",
+    "(224, 223)",
+    "(224, 225)",
+    "(224, 262)",
+    "(224, 286)",
+    "(225, 218)",
+    "(225, 225)",
+    "(225, 259)",
+    "(226, 212)",
+    "(226, 213)",
+    "(226, 214)",
+    "(226, 223)",
+    "(227, 213)",
+    "(227, 222)",
+    "(227, 262)",
+    "(227, 300)",
+    "(228, 221)",
+    "(228, 228)",
+    "(229, 214)",
+    "(229, 223)",
+    "(229, 280)",
+    "(230, 235)",
+    "(230, 241)",
+    "(230, 274)",
+    "(230, 282)",
+    "(232, 216)",
+    "(232, 217)",
+    "(232, 261)",
+    "(233, 208)",
+    "(233, 210)",
+    "(233, 218)",
+    "(233, 222)",
+    "(233, 226)",
+    "(233, 228)",
+    "(233, 233)",
+    "(233, 243)",
+    "(234, 216)",
+    "(234, 218)",
+    "(234, 224)",
+    "(234, 225)",
+    "(234, 234)",
+    "(235, 214)",
+    "(235, 215)",
+    "(235, 216)",
+    "(235, 227)",
+    "(235, 228)",
+    "(235, 229)",
+    "(235, 233)",
+    "(235, 244)",
+    "(235, 257)",
+    "(235, 261)",
+    "(235, 264)",
+    "(235, 277)",
+    "(235, 304)",
+    "(236, 201)",
+    "(236, 203)",
+    "(236, 213)",
+    "(236, 216)",
+    "(236, 218)",
+    "(236, 220)",
+    "(236, 221)",
+    "(236, 222)",
+    "(236, 223)",
+    "(236, 226)",
+    "(236, 228)",
+    "(236, 231)",
+    "(236, 232)",
+    "(236, 236)",
+    "(236, 239)",
+    "(236, 240)",
+    "(236, 243)",
+    "(236, 250)",
+    "(236, 251)",
+    "(236, 252)",
+    "(236, 257)",
+    "(236, 260)",
+    "(236, 262)",
+    "(236, 263)",
+    "(236, 268)",
+    "(236, 269)",
+    "(236, 270)",
+    "(236, 273)",
+    "(236, 280)",
+    "(236, 290)",
+    "(236, 294)",
+    "(236, 295)",
+    "(236, 298)",
+    "(236, 300)",
+    "(236, 309)",
+    "(236, 315)",
+    "(236, 357)",
+    "(236, 366)",
+    "(237, 248)",
+    "(238, 212)",
+    "(239, 224)",
+    "(239, 248)",
+    "(244, 274)",
+    "(248, 274)",
+    "(249, 238)",
+    "(250, 270)",
+    "(251, 273)",
+    "(252, 303)",
+    "(253, 239)",
+    "(254, 198)",
+    "(255, 236)",
+    "(256, 256)",
+    "(257, 248)",
+    "(257, 307)",
+    "(257, 320)",
+    "(259, 194)",
+    "(262, 244)",
+    "(262, 308)",
+    "(267, 328)",
+    "(273, 326)",
+    "(275, 183)",
+    "(275, 301)",
+    "(276, 326)",
+    "(278, 253)",
+    "(278, 280)",
+    "(278, 306)",
+    "(282, 257)",
+    "(286, 356)",
+    "(289, 354)",
+    "(290, 339)",
+    "(290, 342)",
+    "(291, 340)",
+    "(295, 394)",
+    "(296, 320)",
+    "(298, 354)",
+    "(300, 168)",
+    "(300, 258)",
+    "(300, 345)",
+    "(300, 359)",
+    "(300, 412)",
+    "(304, 410)",
+    "(305, 325)",
+    "(305, 337)",
+    "(306, 306)",
+    "(306, 365)",
+    "(310, 380)",
+    "(312, 401)",
+    "(313, 393)",
+    "(314, 195)",
+    "(314, 258)",
+    "(314, 260)",
+    "(314, 358)",
+    "(315, 315)",
+    "(315, 341)",
+    "(317, 378)",
+    "(318, 354)",
+    "(319, 360)",
+    "(320, 344)",
+    "(321, 351)",
+    "(323, 342)",
+    "(324, 284)",
+    "(326, 405)",
+    "(329, 310)",
+    "(329, 314)",
+    "(330, 220)",
+    "(330, 355)",
+    "(331, 392)",
+    "(331, 406)",
+    "(332, 442)",
+    "(334, 407)",
+    "(336, 380)",
+    "(337, 412)",
+    "(338, 345)",
+    "(338, 411)",
+    "(339, 340)",
+    "(339, 406)",
+    "(339, 415)",
+    "(341, 372)",
+    "(341, 377)",
+    "(341, 395)",
+    "(343, 367)",
+    "(350, 350)",
+    "(350, 393)",
+    "(350, 400)",
+    "(351, 398)",
+    "(352, 322)",
+    "(353, 427)",
+    "(354, 442)",
+    "(354, 443)",
+    "(355, 399)",
+    "(355, 452)",
+    "(356, 474)",
+    "(357, 396)",
+    "(359, 449)",
+    "(360, 378)",
+    "(360, 380)",
+    "(364, 418)",
+    "(366, 395)",
+    "(367, 395)",
+    "(369, 395)",
+    "(369, 398)",
+    "(373, 378)",
+    "(374, 370)",
+    "(374, 456)",
+    "(379, 379)",
+    "(380, 530)",
+    "(383, 407)",
+    "(383, 436)",
+    "(384, 382)",
+    "(386, 406)",
+    "(387, 469)",
+    "(388, 453)",
+    "(393, 400)",
+    "(394, 368)",
+    "(398, 397)",
+    "(400, 400)",
+    "(400, 442)",
+    "(401, 475)",
+    "(402, 396)",
+    "(405, 484)",
+    "(407, 485)",
+    "(409, 442)",
+    "(410, 490)",
+    "(411, 396)",
+    "(411, 496)",
+    "(411, 501)",
+    "(414, 496)",
+    "(416, 395)",
+    "(416, 489)",
+    "(416, 512)",
+    "(417, 424)",
+    "(420, 264)",
+    "(420, 280)",
+    "(421, 486)",
+    "(421, 504)",
+    "(428, 417)",
+    "(430, 483)",
+    "(434, 512)",
+    "(438, 502)",
+    "(439, 512)",
+    "(440, 278)",
+    "(440, 398)",
+    "(441, 427)",
+    "(441, 429)",
+    "(441, 442)",
+    "(442, 426)",
+    "(442, 442)",
+    "(442, 454)",
+    "(444, 506)",
+    "(446, 512)",
+    "(450, 446)",
+    "(450, 504)",
+    "(452, 509)",
+    "(453, 437)",
+    "(453, 496)",
+    "(455, 500)",
+    "(456, 501)",
+    "(468, 444)",
+    "(469, 470)",
+    "(470, 432)",
+    "(470, 508)",
+    "(472, 537)",
+    "(472, 546)",
+    "(474, 474)",
+    "(480, 480)",
+    "(485, 510)",
+    "(485, 594)",
+    "(490, 625)",
+    "(491, 624)",
+    "(494, 600)",
+    "(495, 619)",
+    "(497, 320)",
+    "(497, 398)",
+    "(500, 500)",
+    "(502, 502)",
+    "(502, 513)",
+    "(503, 369)",
+    "(504, 488)",
+    "(504, 540)",
+    "(504, 608)",
+    "(507, 340)",
+    "(507, 362)",
+    "(507, 605)",
+    "(509, 537)",
+    "(510, 602)",
+    "(512, 512)",
+    "(513, 522)",
+    "(524, 581)",
+    "(526, 583)",
+    "(528, 528)",
+    "(528, 581)",
+    "(530, 526)",
+    "(531, 577)",
+    "(534, 674)",
+    "(538, 548)",
+    "(540, 568)",
+    "(541, 477)",
+    "(544, 564)",
+    "(546, 562)",
+    "(550, 664)",
+    "(552, 527)",
+    "(554, 554)",
+    "(557, 641)",
+    "(562, 592)",
+    "(564, 665)",
+    "(565, 513)",
+    "(572, 536)",
+    "(591, 650)",
+    "(600, 450)",
+    "(600, 519)",
+    "(600, 600)",
+    "(600, 605)",
+    "(605, 613)",
+    "(620, 415)",
+    "(622, 777)",
+    "(624, 607)",
+    "(625, 603)",
+    "(626, 575)",
+    "(626, 686)",
+    "(629, 585)",
+    "(630, 423)",
+    "(630, 614)",
+    "(630, 630)",
+    "(640, 480)",
+    "(642, 361)",
+    "(645, 439)",
+    "(648, 674)",
+    "(652, 600)",
+    "(655, 602)",
+    "(680, 680)",
+    "(685, 681)",
+    "(717, 717)",
+    "(721, 903)",
+    "(722, 690)",
+    "(724, 851)",
+    "(728, 725)",
+    "(733, 781)",
+    "(750, 750)",
+    "(755, 824)",
+    "(785, 848)",
+    "(800, 693)",
+    "(825, 832)",
+    "(825, 993)",
+    "(850, 745)",
+    "(850, 872)",
+    "(853, 480)",
+    "(890, 1075)",
+    "(892, 826)",
+    "(900, 741)",
+    "(926, 649)",
+    "(940, 900)",
+    "(1000, 583)",
+    "(1000, 714)",
+    "(1024, 830)",
+    "(1024, 1024)",
+    "(1149, 1019)",
+    "(1168, 1178)",
+    "(1275, 1427)",
+    "(1280, 720)",
+    "(1280, 1280)",
+    "(1335, 1302)",
+    "(1338, 1304)",
+    "(1365, 1365)",
+    "(1375, 1446)"
+  ],
+  "corrupted_images": [],
+  "corrupted_image_count": 0,
+  "duplicate_files": [
+    [
+      "Training\\meningioma\\Tr-aug-me_90.jpg",
+      "Training\\meningioma\\Tr-me_1242.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_98.jpg",
+      "Training\\meningioma\\Tr-me_1274.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_95.jpg",
+      "Training\\meningioma\\Tr-me_1295.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_1094.jpg",
+      "Training\\meningioma\\Tr-me_219.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_91.jpg",
+      "Training\\meningioma\\Tr-me_245.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_92.jpg",
+      "Training\\meningioma\\Tr-me_268.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_97.jpg",
+      "Training\\meningioma\\Tr-me_532.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_339.jpg",
+      "Training\\meningioma\\Tr-me_534.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_432.jpg",
+      "Training\\meningioma\\Tr-me_561.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_543.jpg",
+      "Training\\meningioma\\Tr-me_726.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_94.jpg",
+      "Training\\meningioma\\Tr-me_824.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_1101.jpg",
+      "Training\\meningioma\\Tr-me_836.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-me_339.jpg",
+      "Training\\meningioma\\Tr-me_86.jpg"
+    ],
+    [
+      "Training\\meningioma\\Tr-aug-me_89.jpg",
+      "Training\\meningioma\\Tr-me_889.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1000.jpg",
+      "Training\\notumor\\Tr-no_105.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1061.jpg",
+      "Training\\notumor\\Tr-no_1134.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1051.jpg",
+      "Training\\notumor\\Tr-no_1158.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_112.jpg",
+      "Training\\notumor\\Tr-no_1178.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_109.jpg",
+      "Training\\notumor\\Tr-no_1183.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_115.jpg",
+      "Training\\notumor\\Tr-no_1188.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_116.jpg",
+      "Training\\notumor\\Tr-no_121.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1145.jpg",
+      "Training\\notumor\\Tr-no_1234.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1154.jpg",
+      "Training\\notumor\\Tr-no_1235.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_112.jpg",
+      "Training\\notumor\\Tr-no_1265.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1079.jpg",
+      "Training\\notumor\\Tr-no_129.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1179.jpg",
+      "Training\\notumor\\Tr-no_1320.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1245.jpg",
+      "Training\\notumor\\Tr-no_133.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1015.jpg",
+      "Training\\notumor\\Tr-no_1339.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1154.jpg",
+      "Training\\notumor\\Tr-no_1360.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1109.jpg",
+      "Training\\notumor\\Tr-no_1380.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_138.jpg",
+      "Training\\notumor\\Tr-no_1383.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1039.jpg",
+      "Training\\notumor\\Tr-no_1385.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1244.jpg",
+      "Training\\notumor\\Tr-no_1392.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1077.jpg",
+      "Training\\notumor\\Tr-no_1400.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1203.jpg",
+      "Training\\notumor\\Tr-no_154.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1289.jpg",
+      "Training\\notumor\\Tr-no_156.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1336.jpg",
+      "Training\\notumor\\Tr-no_165.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1395.jpg",
+      "Training\\notumor\\Tr-no_17.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1083.jpg",
+      "Training\\notumor\\Tr-no_217.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_194.jpg",
+      "Training\\notumor\\Tr-no_219.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_168.jpg",
+      "Training\\notumor\\Tr-no_230.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_224.jpg",
+      "Training\\notumor\\Tr-no_232.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1334.jpg",
+      "Training\\notumor\\Tr-no_235.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_134.jpg",
+      "Training\\notumor\\Tr-no_255.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1333.jpg",
+      "Training\\notumor\\Tr-no_273.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1290.jpg",
+      "Training\\notumor\\Tr-no_281.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_224.jpg",
+      "Training\\notumor\\Tr-no_29.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_112.jpg",
+      "Training\\notumor\\Tr-no_308.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1051.jpg",
+      "Training\\notumor\\Tr-no_330.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1302.jpg",
+      "Training\\notumor\\Tr-no_341.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_109.jpg",
+      "Training\\notumor\\Tr-no_371.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1267.jpg",
+      "Training\\notumor\\Tr-no_380.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1267.jpg",
+      "Training\\notumor\\Tr-no_387.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1023.jpg",
+      "Training\\notumor\\Tr-no_400.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1208.jpg",
+      "Training\\notumor\\Tr-no_410.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1326.jpg",
+      "Training\\notumor\\Tr-no_411.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1070.jpg",
+      "Training\\notumor\\Tr-no_412.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1187.jpg",
+      "Training\\notumor\\Tr-no_420.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1145.jpg",
+      "Training\\notumor\\Tr-no_430.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1190.jpg",
+      "Training\\notumor\\Tr-no_44.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_280.jpg",
+      "Training\\notumor\\Tr-no_448.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1046.jpg",
+      "Training\\notumor\\Tr-no_454.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_356.jpg",
+      "Training\\notumor\\Tr-no_463.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_250.jpg",
+      "Training\\notumor\\Tr-no_472.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1316.jpg",
+      "Training\\notumor\\Tr-no_475.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_14.jpg",
+      "Training\\notumor\\Tr-no_48.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1291.jpg",
+      "Training\\notumor\\Tr-no_490.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_433.jpg",
+      "Training\\notumor\\Tr-no_492.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_112.jpg",
+      "Training\\notumor\\Tr-no_494.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1062.jpg",
+      "Training\\notumor\\Tr-no_5.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1021.jpg",
+      "Training\\notumor\\Tr-no_503.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1398.jpg",
+      "Training\\notumor\\Tr-no_516.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1281.jpg",
+      "Training\\notumor\\Tr-no_550.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1126.jpg",
+      "Training\\notumor\\Tr-no_564.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1390.jpg",
+      "Training\\notumor\\Tr-no_565.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1105.jpg",
+      "Training\\notumor\\Tr-no_569.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_40.jpg",
+      "Training\\notumor\\Tr-no_581.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_421.jpg",
+      "Training\\notumor\\Tr-no_582.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_293.jpg",
+      "Training\\notumor\\Tr-no_60.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1039.jpg",
+      "Training\\notumor\\Tr-no_600.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_524.jpg",
+      "Training\\notumor\\Tr-no_617.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1079.jpg",
+      "Training\\notumor\\Tr-no_62.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_423.jpg",
+      "Training\\notumor\\Tr-no_63.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_388.jpg",
+      "Training\\notumor\\Tr-no_636.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1393.jpg",
+      "Training\\notumor\\Tr-no_642.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1397.jpg",
+      "Training\\notumor\\Tr-no_660.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_493.jpg",
+      "Training\\notumor\\Tr-no_664.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1095.jpg",
+      "Training\\notumor\\Tr-no_69.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1085.jpg",
+      "Training\\notumor\\Tr-no_692.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1062.jpg",
+      "Training\\notumor\\Tr-no_693.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1309.jpg",
+      "Training\\notumor\\Tr-no_699.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_447.jpg",
+      "Training\\notumor\\Tr-no_720.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1203.jpg",
+      "Training\\notumor\\Tr-no_725.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_56.jpg",
+      "Training\\notumor\\Tr-no_73.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_499.jpg",
+      "Training\\notumor\\Tr-no_734.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_168.jpg",
+      "Training\\notumor\\Tr-no_738.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1140.jpg",
+      "Training\\notumor\\Tr-no_749.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_540.jpg",
+      "Training\\notumor\\Tr-no_753.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_435.jpg",
+      "Training\\notumor\\Tr-no_755.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_577.jpg",
+      "Training\\notumor\\Tr-no_764.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1085.jpg",
+      "Training\\notumor\\Tr-no_767.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_473.jpg",
+      "Training\\notumor\\Tr-no_778.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_349.jpg",
+      "Training\\notumor\\Tr-no_779.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1244.jpg",
+      "Training\\notumor\\Tr-no_781.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_315.jpg",
+      "Training\\notumor\\Tr-no_8.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_721.jpg",
+      "Training\\notumor\\Tr-no_81.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1379.jpg",
+      "Training\\notumor\\Tr-no_810.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_649.jpg",
+      "Training\\notumor\\Tr-no_817.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1016.jpg",
+      "Training\\notumor\\Tr-no_819.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1330.jpg",
+      "Training\\notumor\\Tr-no_825.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1288.jpg",
+      "Training\\notumor\\Tr-no_831.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_447.jpg",
+      "Training\\notumor\\Tr-no_839.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1374.jpg",
+      "Training\\notumor\\Tr-no_840.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_750.jpg",
+      "Training\\notumor\\Tr-no_843.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1154.jpg",
+      "Training\\notumor\\Tr-no_854.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1288.jpg",
+      "Training\\notumor\\Tr-no_863.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1063.jpg",
+      "Training\\notumor\\Tr-no_864.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_455.jpg",
+      "Training\\notumor\\Tr-no_866.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1346.jpg",
+      "Training\\notumor\\Tr-no_889.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_58.jpg",
+      "Training\\notumor\\Tr-no_906.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_304.jpg",
+      "Training\\notumor\\Tr-no_916.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_880.jpg",
+      "Training\\notumor\\Tr-no_918.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_518.jpg",
+      "Training\\notumor\\Tr-no_92.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_486.jpg",
+      "Training\\notumor\\Tr-no_920.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1140.jpg",
+      "Training\\notumor\\Tr-no_931.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_315.jpg",
+      "Training\\notumor\\Tr-no_935.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_43.jpg",
+      "Training\\notumor\\Tr-no_963.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_766.jpg",
+      "Training\\notumor\\Tr-no_967.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_933.jpg",
+      "Training\\notumor\\Tr-no_969.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1085.jpg",
+      "Training\\notumor\\Tr-no_98.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_588.jpg",
+      "Training\\notumor\\Tr-no_989.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_1240.jpg",
+      "Training\\notumor\\Tr-no_990.jpg"
+    ],
+    [
+      "Training\\notumor\\Tr-no_673.jpg",
+      "Training\\notumor\\Tr-no_995.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1098.jpg",
+      "Training\\pituitary\\Tr-pi_1155.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1122.jpg",
+      "Training\\pituitary\\Tr-pi_1196.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1071.jpg",
+      "Training\\pituitary\\Tr-pi_1207.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1154.jpg",
+      "Training\\pituitary\\Tr-pi_1211.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1154.jpg",
+      "Training\\pituitary\\Tr-pi_1339.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1209.jpg",
+      "Training\\pituitary\\Tr-pi_1352.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1154.jpg",
+      "Training\\pituitary\\Tr-pi_160.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1399.jpg",
+      "Training\\pituitary\\Tr-pi_195.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1309.jpg",
+      "Training\\pituitary\\Tr-pi_261.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_17.jpg",
+      "Training\\pituitary\\Tr-pi_306.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_311.jpg",
+      "Training\\pituitary\\Tr-pi_320.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1187.jpg",
+      "Training\\pituitary\\Tr-pi_384.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_286.jpg",
+      "Training\\pituitary\\Tr-pi_397.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_221.jpg",
+      "Training\\pituitary\\Tr-pi_430.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1252.jpg",
+      "Training\\pituitary\\Tr-pi_461.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_396.jpg",
+      "Training\\pituitary\\Tr-pi_476.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_163.jpg",
+      "Training\\pituitary\\Tr-pi_504.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_410.jpg",
+      "Training\\pituitary\\Tr-pi_515.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1252.jpg",
+      "Training\\pituitary\\Tr-pi_528.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_132.jpg",
+      "Training\\pituitary\\Tr-pi_564.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_405.jpg",
+      "Training\\pituitary\\Tr-pi_634.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1181.jpg",
+      "Training\\pituitary\\Tr-pi_668.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_246.jpg",
+      "Training\\pituitary\\Tr-pi_698.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_464.jpg",
+      "Training\\pituitary\\Tr-pi_75.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_356.jpg",
+      "Training\\pituitary\\Tr-pi_759.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_120.jpg",
+      "Training\\pituitary\\Tr-pi_763.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_356.jpg",
+      "Training\\pituitary\\Tr-pi_77.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_193.jpg",
+      "Training\\pituitary\\Tr-pi_812.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_542.jpg",
+      "Training\\pituitary\\Tr-pi_857.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1187.jpg",
+      "Training\\pituitary\\Tr-pi_863.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_805.jpg",
+      "Training\\pituitary\\Tr-pi_878.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_221.jpg",
+      "Training\\pituitary\\Tr-pi_883.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_405.jpg",
+      "Training\\pituitary\\Tr-pi_928.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1122.jpg",
+      "Training\\pituitary\\Tr-pi_943.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_285.jpg",
+      "Training\\pituitary\\Tr-pi_962.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_246.jpg",
+      "Training\\pituitary\\Tr-pi_969.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1323.jpg",
+      "Training\\pituitary\\Tr-pi_984.jpg"
+    ],
+    [
+      "Training\\pituitary\\Tr-pi_1071.jpg",
+      "Training\\pituitary\\Tr-pi_991.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_170.jpg",
+      "Testing\\glioma\\Te-gl_178.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_171.jpg",
+      "Testing\\glioma\\Te-gl_228.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_140.jpg",
+      "Testing\\glioma\\Te-gl_238.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_204.jpg",
+      "Testing\\glioma\\Te-gl_259.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_212.jpg",
+      "Testing\\glioma\\Te-gl_272.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_166.jpg",
+      "Testing\\glioma\\Te-gl_278.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_270.jpg",
+      "Testing\\glioma\\Te-gl_29.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_129.jpg",
+      "Testing\\glioma\\Te-gl_303.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_212.jpg",
+      "Testing\\glioma\\Te-gl_338.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_177.jpg",
+      "Testing\\glioma\\Te-gl_36.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_299.jpg",
+      "Testing\\glioma\\Te-gl_364.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_32.jpg",
+      "Testing\\glioma\\Te-gl_389.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_144.jpg",
+      "Testing\\glioma\\Te-gl_59.jpg"
+    ],
+    [
+      "Testing\\glioma\\Te-gl_143.jpg",
+      "Testing\\glioma\\Te-gl_72.jpg"
+    ],
+    [
+      "Testing\\meningioma\\Te-me_179.jpg",
+      "Testing\\meningioma\\Te-me_198.jpg"
+    ],
+    [
+      "Testing\\meningioma\\Te-me_116.jpg",
+      "Testing\\meningioma\\Te-me_235.jpg"
+    ]
+  ],
+  "duplicate_file_count": 187,
+  "folder_structure": {
+    "training": "Training",
+    "testing": "Testing"
+  }
+}

@@ -2,15 +2,18 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_mail import Mail
 from config.config import config
 import logging
 import os
+os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Please log in to access this page.'
+mail = Mail()
 
 def create_app(config_name='development'):
     """Application factory pattern with error handling"""
@@ -21,6 +24,7 @@ def create_app(config_name='development'):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    mail.init_app(app)
     
     # User loader for Flask-Login
     @login_manager.user_loader
@@ -44,9 +48,22 @@ def create_app(config_name='development'):
     from app.controllers.main import main_bp
     from app.controllers.auth import auth_bp
     from app.controllers.dashboard import dashboard_bp
+    from app.controllers.admin import admin_bp
+    from app.controllers.appointments import appointments_bp
+    from app.controllers.api import api_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(appointments_bp, url_prefix='/dashboard')
+    app.register_blueprint(api_bp)
+    
+    # Auto-create new DB tables without losing existing data
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.warning(f'db.create_all warning (non-fatal): {e}')
     
     # Register error handlers
     register_error_handlers(app)

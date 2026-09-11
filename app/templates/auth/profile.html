@@ -86,13 +86,13 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <strong>Total Predictions:</strong>
-                            <p class="text-muted">{{ user.predictions|length }}</p>
+                            <p class="text-muted">{{ user.prediction_history|length if user.role == 'patient' else 0 }}</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            {% if user.predictions %}
+            {% if user.role == 'patient' and user.prediction_history %}
             <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Recent Predictions</h5>
@@ -109,16 +109,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for prediction in user.predictions[:5] %}
+                                {% for prediction in user.prediction_history[:5] %}
                                 <tr>
-                                    <td>{{ prediction.prediction_type|capitalize }}</td>
+                                    <td>{{ prediction.cancer_type|capitalize }}</td>
                                     <td>
-                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
+                                        <span class="badge bg-primary">
                                             {{ prediction.prediction_result|capitalize }}
                                         </span>
                                     </td>
                                     <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d') }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

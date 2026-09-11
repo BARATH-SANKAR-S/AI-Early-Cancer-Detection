@@ -113,6 +113,7 @@
                                     <th>Type</th>
                                     <th>Result</th>
                                     <th>Confidence</th>
+                                    <th>Risk</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
@@ -126,7 +127,19 @@
                                         </span>
                                     </td>
                                     <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
-                                    <td>{{ prediction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
+                                        {% if risk == 'high' %}
+                                            <span class="badge bg-danger">⚠ High</span>
+                                        {% elif risk == 'medium' %}
+                                            <span class="badge bg-warning text-dark">◑ Medium</span>
+                                        {% elif risk == 'low' %}
+                                            <span class="badge bg-success">✓ Low</span>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

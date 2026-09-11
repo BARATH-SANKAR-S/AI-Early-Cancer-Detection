@@ -192,6 +192,46 @@ class PredictionHistory(db.Model):
     processing_time = db.Column(db.Float)  # in seconds
     additional_data = db.Column(db.JSON)
     
+    @property
+    def effective_risk_level(self):
+        """
+        Returns the resolved risk level ('low', 'medium', 'high').
+        Infers clinically from prediction_result and confidence_score if not explicitly set.
+        """
+        if self.risk_level:
+            return self.risk_level.lower().strip()
+        if self.additional_data and isinstance(self.additional_data, dict) and self.additional_data.get('risk_level'):
+            return str(self.additional_data['risk_level']).lower().strip()
+
+        # Fallback inference
+        result = (self.prediction_result or '').lower().strip()
+        ct = (self.cancer_type or '').lower().strip()
+        conf = float(self.confidence_score or 0.0)
+
+        if 'brain' in ct:
+            if result in ('glioma', 'malignant'):
+                return 'high'
+            elif result in ('meningioma', 'pituitary', 'benign', 'nodule'):
+                return 'medium'
+            elif result == 'tumor':
+                return 'high' if conf >= 0.75 else 'medium'
+            elif result in ('normal', 'notumor'):
+                return 'low' if conf >= 0.70 else 'medium'
+            return 'medium' if conf >= 0.60 else 'low'
+        elif 'lung' in ct:
+            if result == 'malignant':
+                return 'high'
+            elif result == 'benign':
+                return 'medium'
+            return 'low'
+        elif 'skin' in ct:
+            if result in ('melanoma', 'bcc'):
+                return 'high'
+            elif result == 'akiec':
+                return 'medium'
+            return 'low'
+        return 'low'
+
     def __repr__(self):
         return f'<PredictionHistory {self.id} - {self.cancer_type}>'
 
@@ -221,3 +261,54 @@ class Report(db.Model):
     
     def __repr__(self):
         return f'<Report {self.id} - {self.title}>'
+
+# ==================== DOCTOR NOTE MODEL ====================
+class DoctorNote(db.Model):
+    """
+    Doctor's clinical review note on an AI prediction.
+    Allows doctors to approve, flag, or add clinical observations.
+    """
+    __tablename__ = 'doctor_notes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    prediction_id = db.Column(db.Integer, db.ForeignKey('prediction_history.id'), nullable=False)
+    doctor_id     = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
+    note_text     = db.Column(db.Text)
+    status        = db.Column(db.String(20), default='pending')  # pending / approved / flagged / rescan
+    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at    = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    prediction = db.relationship('PredictionHistory', backref='doctor_notes', lazy=True)
+    doctor     = db.relationship('Doctor', backref='notes_written', lazy=True)
+
+    def __repr__(self):
+        return f'<DoctorNote {self.id} - {self.status}>'
+
+
+# ==================== APPOINTMENT MODEL ====================
+class Appointment(db.Model):
+    """
+    Appointment booking between patient and doctor.
+    Can be linked to a specific AI prediction for follow-up.
+    """
+    __tablename__ = 'appointments'
+
+    id           = db.Column(db.Integer, primary_key=True)
+    patient_id   = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False)
+    doctor_id    = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
+    prediction_id = db.Column(db.Integer, db.ForeignKey('prediction_history.id'), nullable=True)
+    scheduled_at = db.Column(db.DateTime, nullable=False)
+    reason       = db.Column(db.Text)
+    notes        = db.Column(db.Text)
+    status       = db.Column(db.String(20), default='pending')  # pending / confirmed / cancelled / completed
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at   = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relationships
+    patient     = db.relationship('Patient', backref='appointments', lazy=True)
+    doctor      = db.relationship('Doctor', backref='appointments', lazy=True)
+    prediction  = db.relationship('PredictionHistory', backref='appointments', lazy=True)
+
+    def __repr__(self):
+        return f'<Appointment {self.id} - {self.status}>'

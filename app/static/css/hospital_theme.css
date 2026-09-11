@@ -1,0 +1,402 @@
+/* ==========================================================================
+   AI Early Cancer Detection System - Medical Hospital Red & White UI/UX Theme
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Primary Red Palette */
+    --hospital-red-50:  #FEF2F2;
+    --hospital-red-100: #FEE2E2;
+    --hospital-red-200: #FECACA;
+    --hospital-red-500: #EF4444;
+    --hospital-red-600: #DC2626;
+    --hospital-red-700: #B91C1C;
+    --hospital-red-800: #991B1B;
+    --hospital-red-900: #7F1D1D;
+
+    /* Primary Medical Red Tokens */
+    --primary-red: #DC2626;
+    --primary-red-hover: #B91C1C;
+    --primary-red-active: #991B1B;
+    --red-gradient: linear-gradient(135deg, #B91C1C 0%, #DC2626 50%, #991B1B 100%);
+    --red-gradient-light: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+    --red-glow: 0 8px 25px rgba(220, 38, 38, 0.25);
+    
+    /* Neutrals & Surfaces */
+    --bg-clinical: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --text-heading: #0F172A;
+    --text-body: #334155;
+    --text-muted: #64748B;
+    --border-light: #E2E8F0;
+    --border-red: #FCA5A5;
+
+    /* Status Colors */
+    --status-success: #16A34A;
+    --status-warning: #D97706;
+    --status-danger: #DC2626;
+    --status-info: #0284C7;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-clinical);
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 700;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+}
+
+/* ─── Navigation Header (Glassmorphic Red & White) ─────────────────────── */
+.navbar-hospital {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 2px solid var(--hospital-red-100);
+    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.05);
+    padding: 0.85rem 0;
+}
+
+.navbar-hospital .navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-heading) !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.navbar-hospital .navbar-brand i {
+    color: var(--primary-red);
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.3));
+}
+
+.navbar-hospital .nav-link {
+    color: var(--text-body) !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.navbar-hospital .nav-link:hover,
+.navbar-hospital .nav-link.active {
+    color: var(--primary-red) !important;
+    background-color: var(--hospital-red-50);
+}
+
+/* ─── Hero Section (Red Hospital Gradient Banner) ────────────────────────── */
+.hero-hospital {
+    background: var(--red-gradient);
+    color: #FFFFFF;
+    padding: 90px 0 100px;
+    position: relative;
+    overflow: hidden;
+    border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+    box-shadow: 0 12px 40px rgba(185, 28, 28, 0.2);
+}
+
+.hero-hospital::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hero-hospital h1 {
+    color: #FFFFFF !important;
+    font-size: 3.2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.hero-hospital p {
+    color: var(--hospital-red-100);
+    font-size: 1.25rem;
+    font-weight: 400;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+/* ─── Hospital Card Component ───────────────────────────────────────────── */
+.card-hospital {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.card-hospital:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(220, 38, 38, 0.12);
+    border-color: var(--border-red);
+}
+
+.card-hospital-header-red {
+    background: var(--red-gradient);
+    color: #FFFFFF;
+    padding: 1.2rem 1.5rem;
+    font-weight: 700;
+    border: none;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────── */
+.btn-hospital-red {
+    background-color: var(--primary-red);
+    background-image: var(--red-gradient-light);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.75rem;
+    box-shadow: var(--red-glow);
+    transition: all 0.25s ease;
+}
+
+.btn-hospital-red:hover {
+    background-color: var(--primary-red-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(220, 38, 38, 0.35);
+}
+
+.btn-hospital-outline-red {
+    background-color: transparent;
+    color: var(--primary-red) !important;
+    font-weight: 700;
+    border: 2px solid var(--primary-red);
+    border-radius: 12px;
+    padding: 0.7rem 1.6rem;
+    transition: all 0.25s ease;
+}
+
+.btn-hospital-outline-red:hover {
+    background-color: var(--primary-red);
+    color: #FFFFFF !important;
+    box-shadow: var(--red-glow);
+    transform: translateY(-2px);
+}
+
+.btn-hospital-white {
+    background-color: #FFFFFF;
+    color: var(--primary-red) !important;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.25s ease;
+}
+
+.btn-hospital-white:hover {
+    background-color: var(--hospital-red-50);
+    color: var(--primary-red-hover) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.btn-hospital-white-outline {
+    background-color: transparent;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 0.7rem 1.6rem;
+    transition: all 0.25s ease;
+}
+
+.btn-hospital-white-outline:hover {
+    background-color: #FFFFFF;
+    color: var(--primary-red) !important;
+    border-color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+/* ─── Badges ────────────────────────────────────────────────────────────── */
+.badge-hospital-red {
+    background-color: var(--hospital-red-50);
+    color: var(--primary-red);
+    border: 1px solid var(--border-red);
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+    border-radius: 8px;
+}
+
+.badge-hospital-solid-red {
+    background-color: var(--primary-red);
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+    border-radius: 8px;
+}
+
+.badge-hospital-green {
+    background-color: #DCFCE7;
+    color: #15803D;
+    border: 1px solid #86EFAC;
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+    border-radius: 8px;
+}
+
+.badge-hospital-warning {
+    background-color: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #FDE68A;
+    font-weight: 600;
+    padding: 0.35em 0.75em;
+    border-radius: 8px;
+}
+
+/* ─── Section Titles ────────────────────────────────────────────────────── */
+.section-title-hospital {
+    font-size: 2.3rem;
+    font-weight: 800;
+    color: var(--text-heading);
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title-hospital::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--red-gradient);
+    border-radius: 4px;
+    margin: 8px auto 0;
+}
+
+.section-subtitle-hospital {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+/* ─── Stats Container ───────────────────────────────────────────────────── */
+.stat-box-hospital {
+    background-color: var(--bg-surface);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+    border-top: 4px solid var(--primary-red);
+}
+
+.stat-number-hospital {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--primary-red);
+    line-height: 1;
+}
+
+/* ─── Hospital Footer ───────────────────────────────────────────────────── */
+.footer-hospital {
+    background-color: #1E1B1B;
+    color: #CBD5E1;
+    padding: 60px 0 30px;
+    margin-top: 80px;
+    border-top: 4px solid var(--primary-red);
+}
+
+.footer-hospital h5 {
+    color: #FFFFFF;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
+}
+
+.footer-hospital a {
+    color: #CBD5E1;
+    transition: color 0.2s ease;
+}
+
+.footer-hospital a:hover {
+    color: var(--hospital-red-200);
+}
+
+.footer-hospital hr {
+    border-color: #334155;
+}
+
+/* Override standard Bootstrap primary elements to Red */
+.bg-primary {
+    background-color: var(--primary-red) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-red) !important;
+    border-color: var(--primary-red) !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: var(--primary-red-hover) !important;
+    border-color: var(--primary-red-hover) !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-red) !important;
+    border-color: var(--primary-red) !important;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: var(--primary-red) !important;
+    color: #FFFFFF !important;
+}
+
+.text-primary {
+    color: var(--primary-red) !important;
+}
+
+.border-primary {
+    border-color: var(--primary-red) !important;
+}
+
+/* ─── Awareness & Charting Section Styling ───────────────────────────── */
+.chart-container-card {
+    background-color: var(--bg-surface);
+    border-radius: 16px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    padding: 1.75rem;
+    position: relative;
+}
+
+.challenge-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border-light);
+    border-left: 5px solid var(--primary-red);
+    border-radius: 12px;
+    padding: 1.5rem;
+    height: 100%;
+    transition: all 0.25s ease;
+}
+
+.challenge-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.1);
+}
+
+.patient-quote-card {
+    background: linear-gradient(135deg, #FFFFFF 0%, var(--hospital-red-50) 100%);
+    border: 1px solid var(--border-red);
+    border-radius: 16px;
+    padding: 1.75rem;
+    height: 100%;
+}
+

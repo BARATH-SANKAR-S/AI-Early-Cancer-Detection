@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-    <div class="container text-center">
-        <h1>Our Services</h1>
-        <p>Comprehensive AI-Powered Cancer Detection Solutions</p>
+<!-- Hero Section (Hospital Red Banner) -->
+<section class="hero-hospital">
+    <div class="container text-center position-relative">
+        <span class="badge bg-white text-danger px-3 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+            <i class="bi bi-hospital me-1"></i> Multi-Modal Clinical AI Services
+        </span>
+        <h1>Clinical Cancer Detection Services</h1>
+        <p>Comprehensive Deep Learning Diagnostic Support Systems for Erode District Hospital Network</p>
     </div>
 </section>
 
@@ -13,127 +16,142 @@
 <section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Detection Services</h2>
-            <p class="section-subtitle">Advanced AI models for various types of cancer detection</p>
+            <h2 class="section-title-hospital">Clinical AI Modules</h2>
+            <p class="section-subtitle-hospital">Active multi-modal AI models for medical image classification and Grad-CAM explainability</p>
         </div>
         
         <div class="row g-4">
-            <!-- Lung Cancer -->
+            <!-- Brain Tumor Detection -->
             <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
+                <div class="card card-hospital h-100 d-flex flex-column" style="border-top: 4px solid var(--primary-red);">
+                    <div class="card-body p-4 flex-grow-1">
                         <div class="text-center mb-3">
-                            <i class="bi bi-lungs feature-icon"></i>
+                            <i class="bi bi-brain text-danger fs-1"></i>
                         </div>
-                        <h4 class="card-title text-center mb-3">Lung Cancer Detection</h4>
-                        <p class="card-text">Our AI analyzes chest X-rays and CT scans to detect early signs of lung cancer with high accuracy.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Chest X-ray analysis</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>CT scan interpretation</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Nodule detection</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Risk assessment</li>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">Brain Tumor Detection</h4>
+                        <p class="card-text text-muted">Vision Transformer (ViT) &amp; ResNet50 analysis of Brain MRI and CT scans for multi-class tumor classification.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Glioma, Meningioma, Pituitary &amp; Normal</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Vision Transformer (ViT) Self-Attention</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>High Diagnostic Confidence Scoring</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Supports DICOM, PNG, JPG Slices</li>
                         </ul>
-                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red w-100">
+                            <i class="bi bi-cpu-fill me-1"></i> Run Brain AI Analysis
+                        </a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Breast Cancer -->
+
+            <!-- Lung Cancer -->
             <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
+                <div class="card card-hospital h-100 d-flex flex-column" style="border-top: 4px solid var(--primary-red);">
+                    <div class="card-body p-4 flex-grow-1">
                         <div class="text-center mb-3">
-                            <i class="bi bi-heart feature-icon"></i>
+                            <i class="bi bi-lungs-fill text-danger fs-1"></i>
                         </div>
-                        <h4 class="card-title text-center mb-3">Breast Cancer Detection</h4>
-                        <p class="card-text">Deep learning models analyze mammograms for early detection of breast abnormalities and tumors.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Mammogram analysis</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Tumor classification</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Benign vs malignant</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Risk stratification</li>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">Lung Cancer Detection</h4>
+                        <p class="card-text text-muted">EfficientNet-B4 Convolutional Neural Network trained on CT slices and Chest X-rays with Grad-CAM heatmap visualization.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Normal, Benign &amp; Malignant Nodule Classification</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Real-time Grad-CAM Heatmap Localization</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Trained on IQ-OTH/NCCD CT Benchmark</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Instant Diagnostic PDF Report Download</li>
                         </ul>
-                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red w-100">
+                            <i class="bi bi-cpu-fill me-1"></i> Run Lung AI Analysis
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Skin Cancer -->
             <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
+                <div class="card card-hospital h-100 d-flex flex-column" style="border-top: 4px solid var(--primary-red);">
+                    <div class="card-body p-4 flex-grow-1">
                         <div class="text-center mb-3">
-                            <i class="bi bi-person feature-icon"></i>
+                            <i class="bi bi-person-bounding-box text-danger fs-1"></i>
                         </div>
-                        <h4 class="card-title text-center mb-3">Skin Cancer Detection</h4>
-                        <p class="card-text">AI-powered dermatological image analysis for early detection of skin cancer and melanoma.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lesion classification</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Melanoma detection</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Image upload support</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Instant results</li>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">Skin Cancer Detection</h4>
+                        <p class="card-text text-muted">EfficientNet-B3 dermatological analysis of dermoscopy photos classifying 7 lesion categories including Melanoma &amp; BCC.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>7-Class Lesion Diagnosis (ISIC 2019)</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Melanoma &amp; Basal Cell Carcinoma Detection</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Grad-CAM Lesion Edge Heatmaps</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Supports Mobile Dermoscopy Photos</li>
                         </ul>
-                        <button class="btn btn-primary w-100 mt-3">Start Screening</button>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red w-100">
+                            <i class="bi bi-cpu-fill me-1"></i> Run Skin AI Analysis
+                        </a>
                     </div>
                 </div>
             </div>
             
-            <!-- Risk Prediction -->
+            <!-- Clinical Risk Prediction -->
             <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
+                <div class="card card-hospital h-100 d-flex flex-column">
+                    <div class="card-body p-4 flex-grow-1">
                         <div class="text-center mb-3">
-                            <i class="bi bi-graph-up feature-icon"></i>
+                            <i class="bi bi-file-earmark-medical-fill text-danger fs-1"></i>
                         </div>
-                        <h4 class="card-title text-center mb-3">Risk Prediction</h4>
-                        <p class="card-text">Comprehensive risk assessment based on patient demographics, family history, and lifestyle factors.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Personalized risk scores</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Family history analysis</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lifestyle assessment</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Prevention recommendations</li>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">Clinical Risk Assessment</h4>
+                        <p class="card-text text-muted">Assessment based on patient demographics, symptoms, smoking history, and family medical background.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Personalized Risk Score Matrix</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Family History &amp; Hereditary Analysis</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Early Prevention Recommendations</li>
                         </ul>
-                        <button class="btn btn-primary w-100 mt-3">Assess Risk</button>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('dashboard.clinical_data') }}" class="btn btn-hospital-outline-red w-100">Submit Clinical Form</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PDF Diagnostic Reports -->
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-hospital h-100 d-flex flex-column">
+                    <div class="card-body p-4 flex-grow-1">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-file-earmark-pdf-fill text-danger fs-1"></i>
+                        </div>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">PDF Clinical Reports</h4>
+                        <p class="card-text text-muted">Automated generation of formal medical diagnostic reports containing AI predictions, probability breakdown, and Grad-CAM overlays.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Printable Hospital Format</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Embedded Visual Heatmaps</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Doctor Verification Stamp Area</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-hospital-outline-red w-100">View Patient History</a>
                     </div>
                 </div>
             </div>
             
-            <!-- Medical Records -->
+            <!-- Doctor Consultation -->
             <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
+                <div class="card card-hospital h-100 d-flex flex-column">
+                    <div class="card-body p-4 flex-grow-1">
                         <div class="text-center mb-3">
-                            <i class="bi bi-file-medical feature-icon"></i>
+                            <i class="bi bi-hospital-fill text-danger fs-1"></i>
                         </div>
-                        <h4 class="card-title text-center mb-3">Medical Records</h4>
-                        <p class="card-text">Secure storage and management of patient medical history, lab reports, and imaging studies.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Secure cloud storage</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Lab report upload</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Scan imaging storage</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>History tracking</li>
+                        <h4 class="card-title text-center text-danger fw-bold mb-3">Specialist Appointment</h4>
+                        <p class="card-text text-muted">Schedule direct appointments with accredited oncologists and radiologists across Erode District hospitals.</p>
+                        <ul class="list-unstyled small mt-3">
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Oncologist &amp; Radiologist Review</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Second Opinion &amp; Confirmation</li>
+                            <li class="mb-2"><i class="bi bi-check2-circle text-danger me-2"></i>Follow-up Treatment Guidance</li>
                         </ul>
-                        <button class="btn btn-primary w-100 mt-3">View Records</button>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Consultation -->
-            <div class="col-lg-4 col-md-6">
-                <div class="card feature-card h-100">
-                    <div class="card-body p-4">
-                        <div class="text-center mb-3">
-                            <i class="bi bi-chat-doctor feature-icon"></i>
-                        </div>
-                        <h4 class="card-title text-center mb-3">Expert Consultation</h4>
-                        <p class="card-text">Connect with oncologists and radiologists for expert review of AI predictions and results.</p>
-                        <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Doctor consultation</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Second opinion</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Treatment guidance</li>
-                            <li class="mb-2"><i class="bi bi-check2 text-success me-2"></i>Follow-up care</li>
-                        </ul>
-                        <button class="btn btn-primary w-100 mt-3">Book Consultation</button>
+                    <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                        <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-hospital-outline-red w-100">Book Hospital Appointment</a>
                     </div>
                 </div>
             </div>
@@ -141,30 +159,41 @@
     </div>
 </section>
 
-<!-- Process Section -->
-<section class="py-5 bg-light">
+<!-- Process Workflow Section -->
+<section class="py-5" style="background-color: var(--hospital-red-50);">
     <div class="container">
-        <h2 class="section-title text-center mb-5">How It Works</h2>
-        <div class="row">
-            <div class="col-md-3 text-center mb-4">
-                <div class="display-4 text-primary mb-3">1</div>
-                <h5>Upload Medical Images</h5>
-                <p class="text-muted">Upload your X-rays, mammograms, or skin images through our secure platform.</p>
+        <div class="text-center mb-5">
+            <h2 class="section-title-hospital">Clinical Workflow</h2>
+            <p class="section-subtitle-hospital">How our hospital AI processes patient medical images</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="stat-box-hospital">
+                    <div class="badge bg-danger text-white rounded-circle fs-4 mb-3" style="width:50px; height:50px; line-height:38px;">1</div>
+                    <h5 class="fw-bold">Upload Medical Image</h5>
+                    <p class="small text-muted mb-0">Upload MRI, CT, X-ray, or Dermoscopy scan.</p>
+                </div>
             </div>
-            <div class="col-md-3 text-center mb-4">
-                <div class="display-4 text-success mb-3">2</div>
-                <h5>AI Analysis</h5>
-                <p class="text-muted">Our advanced AI models analyze your images for any abnormalities.</p>
+            <div class="col-md-3 text-center">
+                <div class="stat-box-hospital">
+                    <div class="badge bg-danger text-white rounded-circle fs-4 mb-3" style="width:50px; height:50px; line-height:38px;">2</div>
+                    <h5 class="fw-bold">AI Multi-Modal Analysis</h5>
+                    <p class="small text-muted mb-0">Deep model executes prediction &amp; Grad-CAM.</p>
+                </div>
             </div>
-            <div class="col-md-3 text-center mb-4">
-                <div class="display-4 text-info mb-3">3</div>
-                <h5>Get Results</h5>
-                <p class="text-muted">Receive instant preliminary results with confidence scores.</p>
+            <div class="col-md-3 text-center">
+                <div class="stat-box-hospital">
+                    <div class="badge bg-danger text-white rounded-circle fs-4 mb-3" style="width:50px; height:50px; line-height:38px;">3</div>
+                    <h5 class="fw-bold">Review &amp; Report</h5>
+                    <p class="small text-muted mb-0">View confidence, risk tier, and PDF report.</p>
+                </div>
             </div>
-            <div class="col-md-3 text-center mb-4">
-                <div class="display-4 text-warning mb-3">4</div>
-                <h5>Expert Review</h5>
-                <p class="text-muted">Optional consultation with medical professionals for confirmation.</p>
+            <div class="col-md-3 text-center">
+                <div class="stat-box-hospital">
+                    <div class="badge bg-danger text-white rounded-circle fs-4 mb-3" style="width:50px; height:50px; line-height:38px;">4</div>
+                    <h5 class="fw-bold">Doctor Follow-Up</h5>
+                    <p class="small text-muted mb-0">Consult with hospital specialist if risk is high.</p>
+                </div>
             </div>
         </div>
     </div>

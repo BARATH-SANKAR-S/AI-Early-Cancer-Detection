@@ -40,13 +40,13 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card shadow border-0 bg-info text-white">
+            <div class="card shadow border-0 bg-warning text-white">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <i class="bi bi-activity display-4 me-3"></i>
+                        <i class="bi bi-calendar-check display-4 me-3"></i>
                         <div>
-                            <h3 class="card-title mb-0">Active</h3>
-                            <p class="card-text mb-0">System Status</p>
+                            <h3 class="card-title mb-0">{{ pending_appointments }}</h3>
+                            <p class="card-text mb-0">Pending Appointments</p>
                         </div>
                     </div>
                 </div>
@@ -95,6 +95,19 @@
                 </div>
             </a>
         </div>
+        <div class="col-md-3 mb-3">
+            <a href="{{ url_for('appointments.doctor_appointments') }}" class="card text-decoration-none h-100">
+                <div class="card-body text-center shadow">
+                    <i class="bi bi-calendar2-week display-4 text-warning mb-3"></i>
+                    <h5 class="card-title">Appointments</h5>
+                    {% if pending_appointments > 0 %}
+                    <span class="badge bg-danger">{{ pending_appointments }} Pending</span>
+                    {% else %}
+                    <p class="card-text text-muted">Manage your schedule</p>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
     </div>
     
     <!-- Recent Predictions -->
@@ -114,6 +127,7 @@
                                     <th>Type</th>
                                     <th>Result</th>
                                     <th>Confidence</th>
+                                    <th>Risk</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
@@ -128,6 +142,18 @@
                                         </span>
                                     </td>
                                     <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
+                                    <td>
+                                        {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
+                                        {% if risk == 'high' %}
+                                            <span class="badge bg-danger">⚠ High</span>
+                                        {% elif risk == 'medium' %}
+                                            <span class="badge bg-warning text-dark">◑ Medium</span>
+                                        {% elif risk == 'low' %}
+                                            <span class="badge bg-success">✓ Low</span>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
                                 </tr>
                                 {% endfor %}

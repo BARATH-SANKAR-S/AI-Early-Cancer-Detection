@@ -13,7 +13,7 @@
             <h1 class="display-5 mb-4">Upload Medical Image</h1>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-lg-8">
             <div class="card shadow">
@@ -22,29 +22,75 @@
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ url_for('dashboard.upload_image') }}" enctype="multipart/form-data">
-                        
+
                         <div class="mb-4">
                             <label for="file" class="form-label">Select Medical Image *</label>
-                            <input type="file" class="form-control" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.bmp,.tiff" required>
-                            <div class="form-text">Accepted formats: PNG, JPG, JPEG, GIF, BMP, TIFF. Maximum file size: 16MB</div>
+                            <input type="file" class="form-control" id="file" name="file"
+                                   accept=".png,.jpg,.jpeg,.gif,.bmp,.tiff" required>
+                            <div class="form-text">Accepted formats: PNG, JPG, JPEG, GIF, BMP, TIFF. Max size: 16MB</div>
                         </div>
-                        
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> 
-                            <strong>Supported Image Types:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>X-ray images</li>
-                                <li>CT scans</li>
-                                <li>MRI scans</li>
-                                <li>Ultrasound images</li>
-                                <li>Mammography images</li>
-                                <li>Pathology reports (as images)</li>
-                            </ul>
+
+                        <div class="mb-4">
+                            <label for="image_type" class="form-label">Cancer Detection Type *</label>
+                            <select class="form-select" id="image_type" name="image_type"
+                                    required onchange="updateInfoCard(this.value)">
+                                <option value="">— Select type of scan / image —</option>
+
+                                <!-- Brain -->
+                                <optgroup label="🧠 Brain Tumor Detection">
+                                    <option value="mri">MRI Scan (Brain)</option>
+                                    <option value="ct">CT Scan (Brain)</option>
+                                </optgroup>
+
+                                <!-- Lung -->
+                                <optgroup label="🫁 Lung Cancer Detection">
+                                    <option value="lung_ct">CT Scan (Lung)</option>
+                                    <option value="lung_mri">MRI Scan (Lung)</option>
+                                    <option value="lung_xray">Chest X-Ray (Lung)</option>
+                                </optgroup>
+
+                                <!-- Skin -->
+                                <optgroup label="🔬 Skin Cancer Detection">
+                                    <option value="skin">Dermoscopy / Skin Photo</option>
+                                    <option value="skin_mri">MRI Scan (Skin / Tissue)</option>
+                                    <option value="skin_ct">CT Scan (Skin / Tissue)</option>
+                                    <option value="skin_xray">X-Ray (Skin / Soft Tissue)</option>
+                                </optgroup>
+                            </select>
+                            <div class="form-text">The AI will automatically use the correct model for your selection.</div>
                         </div>
-                        
+
+                        <!-- Dynamic info card based on selection -->
+                        <div id="info-card" class="alert alert-info d-none mb-4">
+                            <div id="info-brain" class="d-none">
+                                <strong><i class="bi bi-brain"></i> Brain Tumor Detection</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>MRI</strong> — uses Vision Transformer (ViT) model</li>
+                                    <li><strong>CT Scan</strong> — uses ResNet50 transfer learning</li>
+                                    <li>Classes: Glioma · Meningioma · Pituitary · No Tumor</li>
+                                </ul>
+                            </div>
+                            <div id="info-lung" class="d-none">
+                                <strong><i class="bi bi-lungs"></i> Lung Cancer Detection</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Uses <strong>EfficientNet-B4</strong> with Grad-CAM heatmap (>90% accuracy)</li>
+                                    <li>Classes: Normal · Benign Nodule · Malignant Nodule</li>
+                                    <li>Supports Lung CT slices, MRI scans, and Chest X-rays</li>
+                                </ul>
+                            </div>
+                            <div id="info-skin" class="d-none">
+                                <strong><i class="bi bi-person-bounding-box"></i> Skin Cancer Detection</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Uses <strong>EfficientNet-B3</strong> with Grad-CAM heatmap (>83% accuracy)</li>
+                                    <li>7 classes: Melanoma · Nevus · BCC · BKL · AKIEC · DF · Vasc</li>
+                                    <li>Supports Dermoscopy, Skin MRI, Skin CT, and Soft Tissue X-rays</li>
+                                </ul>
+                            </div>
+                        </div>
+
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-cloud-upload"></i> Upload Image
+                            <button type="submit" class="btn btn-primary btn-lg" id="upload-btn" disabled>
+                                <i class="bi bi-cloud-upload"></i> Upload &amp; Queue for Analysis
                             </button>
                             <a href="{{ url_for('dashboard.patient_dashboard') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left"></i> Back to Dashboard
@@ -54,31 +100,68 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-4">
+            <!-- Cancer type overview cards -->
             <div class="card shadow mb-4">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Tips</h5>
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Upload Guidelines</h6>
                 </div>
                 <div class="card-body">
-                    <ul class="list-unstyled">
-                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Ensure image is clear and high-quality</li>
-                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Remove personal information from images</li>
-                        <li class="mb-3"><i class="bi bi-check-circle text-success"></i> Use the original medical image format</li>
-                        <li><i class="bi bi-check-circle text-success"></i> Include relevant patient ID if available</li>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Use high-resolution, clear images</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Remove personal info from images</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success"></i> Skin photos: good lighting, close-up</li>
+                        <li><i class="bi bi-check-circle text-success"></i> CT/MRI: use original DICOM exports</li>
                     </ul>
                 </div>
             </div>
-            
-            <div class="card shadow">
+
+            <div class="card shadow border-warning">
                 <div class="card-header bg-warning">
-                    <h5 class="mb-0"><i class="bi bi-shield-check"></i> Privacy & Security</h5>
+                    <h6 class="mb-0"><i class="bi bi-shield-check"></i> Privacy &amp; Security</h6>
                 </div>
                 <div class="card-body">
-                    <p class="small text-muted mb-0">Your medical images are encrypted and stored securely. They are only accessible to authorized healthcare providers involved in your care.</p>
+                    <p class="small text-muted mb-0">Your medical images are encrypted and stored securely. Only authorized healthcare providers involved in your care can access them.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+const infoMap = {
+    'mri': 'info-brain',
+    'ct':  'info-brain',
+    'lung': 'info-lung',
+    'lung_ct': 'info-lung',
+    'lung_mri': 'info-lung',
+    'lung_xray': 'info-lung',
+    'xray': 'info-lung',
+    'skin': 'info-skin',
+    'skin_mri': 'info-skin',
+    'skin_ct': 'info-skin',
+    'skin_xray': 'info-skin',
+};
+
+function updateInfoCard(value) {
+    const card = document.getElementById('info-card');
+    const btn  = document.getElementById('upload-btn');
+    // Hide all sub-sections
+    ['info-brain', 'info-lung', 'info-skin'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('d-none');
+    });
+
+    if (value && infoMap[value]) {
+        const target = document.getElementById(infoMap[value]);
+        if (target) target.classList.remove('d-none');
+        card.classList.remove('d-none');
+        btn.disabled = false;
+    } else {
+        card.classList.add('d-none');
+        btn.disabled = true;
+    }
+}
+</script>
 {% endblock %}
