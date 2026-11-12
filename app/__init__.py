@@ -51,12 +51,14 @@ def create_app(config_name='development'):
     from app.controllers.admin import admin_bp
     from app.controllers.appointments import appointments_bp
     from app.controllers.api import api_bp
+    from app.controllers.chatbot import chatbot_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(admin_bp)
     app.register_blueprint(appointments_bp, url_prefix='/dashboard')
     app.register_blueprint(api_bp)
+    app.register_blueprint(chatbot_bp)
     
     # Auto-create new DB tables without losing existing data
     with app.app_context():

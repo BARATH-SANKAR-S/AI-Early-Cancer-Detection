@@ -1,72 +1,180 @@
 {% extends "base.html" %}
 
+{% block title %}Patient Directory | AI Early Cancer Detection{% endblock %}
+
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Patients</li>
-                </ol>
-            </nav>
-            <h1 class="display-5 mb-4">All Patients</h1>
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-4 rounded-4 bg-white shadow-sm border border-light">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-3 d-flex align-items-center justify-content-center text-primary"
+                 style="width:52px; height:52px; background:#EFF6FF; font-size:1.6rem;">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div>
+                <nav aria-label="breadcrumb" class="mb-1">
+                    <ol class="breadcrumb mb-0" style="font-size:0.8rem;">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_dashboard') }}" class="text-decoration-none text-muted">Dashboard</a></li>
+                        <li class="breadcrumb-item active text-primary fw-semibold">Patient Directory</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold text-dark mb-0">Patient Directory</h2>
+                <p class="text-muted small mb-0">All registered patients under clinical care</p>
+            </div>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2 align-items-center">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fs-6">
+                <i class="bi bi-people me-1"></i> {{ patients|length }} Patients
+            </span>
+            <a href="{{ url_for('dashboard.search_patient') }}" class="btn btn-outline-primary rounded-3 px-3">
+                <i class="bi bi-search me-1"></i> Search
+            </a>
+            <a href="{{ url_for('dashboard.doctor_dashboard') }}" class="btn btn-primary shadow-sm">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
         </div>
     </div>
-    
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-people"></i> Registered Patients</h5>
-                    <span class="badge bg-light text-dark">{{ patients|length }} Total</span>
-                </div>
-                <div class="card-body">
-                    {% if patients %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Age</th>
-                                    <th>Gender</th>
-                                    <th>District</th>
-                                    <th>Joined</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for patient in patients %}
-                                <tr>
-                                    <td>{{ patient.full_name }}</td>
-                                    <td>@{{ patient.username }}</td>
-                                    <td>{{ patient.email }}</td>
-                                    <td>{{ patient.age or '-' }}</td>
-                                    <td>{{ patient.gender|capitalize if patient.gender else '-' }}</td>
-                                    <td>{{ patient.district }}</td>
-                                    <td>{{ patient.created_at.strftime('%Y-%m-%d') }}</td>
-                                    <td>
-                                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=patient.id) }}" class="btn btn-sm btn-primary">
-                                            <i class="bi bi-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+
+    <!-- Live Search Bar -->
+    <div class="mb-4">
+        <div class="input-group shadow-sm rounded-3 overflow-hidden border border-light">
+            <span class="input-group-text bg-white border-0 ps-4">
+                <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="patientSearch" class="form-control border-0 py-3"
+                   placeholder="Filter by name, username, email or district..." oninput="filterPatients()">
+            <span class="input-group-text bg-white border-0 pe-4 text-muted small" id="searchCount">
+                {{ patients|length }} results
+            </span>
+        </div>
+    </div>
+
+    <!-- Patient Cards Grid -->
+    {% if patients %}
+    <div class="row g-3" id="patientGrid">
+        {% for patient in patients %}
+        <div class="col-md-6 col-lg-4 patient-card-wrapper"
+             data-name="{{ patient.full_name|lower }}"
+             data-username="{{ patient.username|lower }}"
+             data-email="{{ patient.email|lower if patient.email else '' }}"
+             data-district="{{ patient.district|lower if patient.district else '' }}">
+            <div class="card border-0 rounded-4 shadow-sm bg-white h-100 hover-lift">
+                <div class="card-body p-4">
+                    <!-- Patient Header -->
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm flex-shrink-0"
+                             style="width:52px; height:52px; font-size:1.3rem;
+                                    background: linear-gradient(135deg,
+                                    {% if loop.index % 5 == 1 %}#0284C7, #0369A1
+                                    {% elif loop.index % 5 == 2 %}#059669, #047857
+                                    {% elif loop.index % 5 == 3 %}#7C3AED, #6D28D9
+                                    {% elif loop.index % 5 == 4 %}#DC2626, #B91C1C
+                                    {% else %}#D97706, #B45309{% endif %});">
+                            {{ patient.full_name[0].upper() if patient.full_name else 'P' }}
+                        </div>
+                        <div class="flex-grow-1" style="min-width:0;">
+                            <h6 class="fw-bold text-dark mb-0 text-truncate">{{ patient.full_name }}</h6>
+                            <span class="text-muted small">@{{ patient.username }}</span>
+                            {% if patient.email %}
+                            <div class="text-muted small text-truncate mt-1">
+                                <i class="bi bi-envelope me-1"></i>{{ patient.email }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small flex-shrink-0">
+                            <i class="bi bi-check-circle-fill me-1"></i>Active
+                        </span>
                     </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="bi bi-people display-1 text-muted mb-3"></i>
-                        <h4>No Patients Registered</h4>
-                        <p class="text-muted">There are no patients registered in the system yet.</p>
+
+                    <!-- Patient Details Row -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% if patient.age %}
+                        <span class="badge bg-light text-dark border px-2 py-1">
+                            <i class="bi bi-person me-1"></i>{{ patient.age }} yrs
+                        </span>
+                        {% endif %}
+                        {% if patient.gender %}
+                        <span class="badge bg-light text-dark border px-2 py-1">
+                            <i class="bi bi-people me-1"></i>{{ patient.gender|capitalize }}
+                        </span>
+                        {% endif %}
+                        {% if patient.district %}
+                        <span class="badge bg-light text-dark border px-2 py-1">
+                            <i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ patient.district }}
+                        </span>
+                        {% endif %}
                     </div>
-                    {% endif %}
+
+                    <!-- Footer: Joined Date + Action -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar3 me-1"></i>Joined {{ patient.created_at.strftime('%d %b %Y') }}
+                        </small>
+                        <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=patient.id) }}"
+                           class="btn btn-sm btn-primary rounded-pill px-3">
+                            <i class="bi bi-eye-fill me-1"></i> View
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
+
+    <!-- No results message (hidden by default) -->
+    <div id="noResults" class="text-center py-5 d-none">
+        <i class="bi bi-search display-4 text-muted mb-3 d-block"></i>
+        <h5 class="text-muted">No patients match your search</h5>
+        <p class="text-muted small">Try a different name, username or district</p>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="card border-0 rounded-4 shadow-sm bg-white">
+        <div class="card-body text-center py-5">
+            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center text-muted mb-4"
+                 style="width:80px; height:80px; background:#F8FAFC; font-size:2.2rem;">
+                <i class="bi bi-people"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">No Patients Registered</h4>
+            <p class="text-muted mb-0">There are no patients registered in the system yet.</p>
+        </div>
+    </div>
+    {% endif %}
+
 </div>
+
+<style>
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+}
+</style>
+
+<script>
+function filterPatients() {
+    const query = document.getElementById('patientSearch').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.patient-card-wrapper');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const name = card.dataset.name || '';
+        const username = card.dataset.username || '';
+        const email = card.dataset.email || '';
+        const district = card.dataset.district || '';
+        const match = !query || name.includes(query) || username.includes(query) ||
+                      email.includes(query) || district.includes(query);
+        card.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+    });
+
+    document.getElementById('searchCount').textContent = visibleCount + ' results';
+    document.getElementById('noResults').classList.toggle('d-none', visibleCount > 0);
+    document.getElementById('patientGrid').classList.toggle('d-none', visibleCount === 0);
+}
+</script>
 {% endblock %}

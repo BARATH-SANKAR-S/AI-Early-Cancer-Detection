@@ -128,25 +128,27 @@ def overlay_heatmap_on_image(original_image_path, cam, output_size=(224, 224)):
         cam_pil = Image.fromarray(np.uint8(255 * cam_norm)).resize(output_size, Image.BILINEAR)
         cam_resized = np.array(cam_pil, dtype=np.float32) / 255.0
 
-        try:
-            import matplotlib.colormaps as cmaps
-            cmap = cmaps['jet']
-        except Exception:
-            import matplotlib.cm as cm
-            cmap = cm.get_cmap('jet')
-
+        import matplotlib
+        cmap = matplotlib.colormaps['jet']
         heatmap_rgb = np.uint8(255 * cmap(cam_resized)[:, :, :3])
+
+        # Raw heatmap
+        buf_raw = io.BytesIO()
+        Image.fromarray(heatmap_rgb).save(buf_raw, format='PNG')
+        raw_b64 = f"data:image/png;base64,{base64.b64encode(buf_raw.getvalue()).decode('utf-8')}"
+
+        # Blend overlay
         overlay = np.uint8(np.clip(0.55 * orig_np + 0.45 * heatmap_rgb, 0, 255))
         overlay_img = Image.fromarray(overlay)
 
         buf = io.BytesIO()
         overlay_img.save(buf, format='PNG')
-        b64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-        return f"data:image/png;base64,{b64}"
+        overlay_b64 = f"data:image/png;base64,{base64.b64encode(buf.getvalue()).decode('utf-8')}"
+        return overlay_b64, raw_b64
 
     except Exception as e:
         logger.warning(f"Heatmap overlay failed: {e}")
-        return None
+        return None, None
 
 
 # ─────────────────────────────────────────────
@@ -289,6 +291,8 @@ class SkinCancerInference:
             }
 
             # Grad-CAM heatmap
+            result['heatmap_b64'] = None
+            result['raw_heatmap_b64'] = None
             if generate_heatmap and self.grad_cam is not None:
                 try:
                     img_tensor_grad = self._preprocess(image_path)
@@ -296,12 +300,13 @@ class SkinCancerInference:
                     cam = self.grad_cam.generate(
                         img_tensor_grad, class_idx=predicted_idx.item()
                     )
-                    result['heatmap_b64'] = overlay_heatmap_on_image(
+                    over_b64, raw_b64 = overlay_heatmap_on_image(
                         image_path, cam
                     )
+                    result['heatmap_b64'] = over_b64
+                    result['raw_heatmap_b64'] = raw_b64
                 except Exception as he:
                     logger.warning(f"Grad-CAM failed: {he}")
-                    result['heatmap_b64'] = None
 
             return result
 

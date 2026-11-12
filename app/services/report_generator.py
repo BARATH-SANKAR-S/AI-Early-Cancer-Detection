@@ -138,9 +138,51 @@ def _decode_heatmap_to_temp(heatmap_b64):
         return None
 
 
+import hashlib
+
+def _generate_qr_temp(url):
+    """Generate QR code PNG pointing to report verification URL."""
+    try:
+        import qrcode
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=8,
+            border=4,
+        )
+        qr.add_data(url)
+        qr.make(fit=True)
+        # Use high-contrast black on white with clear quiet zone
+        img = qr.make_image(fill_color="black", back_color="white")
+        tmp = tempfile.NamedTemporaryFile(suffix='.png', delete=False)
+        img.save(tmp.name, format='PNG')
+        tmp.close()
+        return tmp.name
+    except Exception as e:
+        logger.warning(f"QR code generation failed: {e}")
+        return None
+
+
+import socket
+
+def _get_lan_ip():
+    """Return the machine's LAN IP address (e.g. 192.168.x.x or 10.x.x.x).
+    Falls back to 127.0.0.1 if detection fails."""
+    try:
+        # Connect to an external address (doesn't actually send data)
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return '127.0.0.1'
+
+
 # ── Main generator ────────────────────────────────────────────────────────────
 
-def generate_pdf_report(prediction, patient, output_path=None):
+def generate_pdf_report(prediction, patient, output_path=None, base_url=None):
+
     """
     Generate a professional PDF medical report.
 
@@ -152,8 +194,21 @@ def generate_pdf_report(prediction, patient, output_path=None):
     Returns:
         BytesIO buffer containing the PDF, or writes to output_path.
     """
+    # Resolve base_url: check REPORT_BASE_URL env first, or passed value, otherwise auto-detect LAN IP
+    custom_base = os.getenv('REPORT_BASE_URL')
+    if custom_base:
+        base_url = custom_base.rstrip('/')
+    elif not base_url:
+        lan_ip = _get_lan_ip()
+        base_url = f'http://{lan_ip}:5000'
+    elif '127.0.0.1' in base_url or 'localhost' in base_url:
+        # Replace loopback with LAN IP so phones can reach the server
+        lan_ip = _get_lan_ip()
+        base_url = base_url.replace('127.0.0.1', lan_ip).replace('localhost', lan_ip)
+
     styles = _make_styles()
     buf = io.BytesIO() if output_path is None else output_path
+
 
     doc = SimpleDocTemplate(
         buf,
@@ -173,17 +228,7 @@ def generate_pdf_report(prediction, patient, output_path=None):
     emoji = CANCER_EMOJI.get(cancer_type, '🏥')
     cancer_label = cancer_type.replace('_', ' ').title()
 
-    header_data = [[
-        Paragraph(f'AI Early Cancer Detection System', styles['hospital']),
-        Paragraph('Powered by Deep Learning • EfficientNet / ResNet / ViT', styles['hospital_sub']),
-    ]]
-    # Flatten to single column
-    header_data = [
-        [Paragraph('AI Early Cancer Detection System', styles['hospital'])],
-        [Paragraph('Powered by Deep Learning  •  EfficientNet / ResNet / ViT', styles['hospital_sub'])],
-    ]
-    h = Table([[Paragraph('AI Early Cancer Detection System', styles['hospital'])],
-               [Paragraph('Powered by Deep Learning  •  EfficientNet / ResNet / ViT', styles['hospital_sub'])]],
+    h = Table([[Paragraph('AI Early Cancer Detection System', styles['hospital'])]],
               colWidths=[17 * cm])
     h.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), PRIMARY),
@@ -260,35 +305,7 @@ def generate_pdf_report(prediction, patient, output_path=None):
     add(risk_cell)
     add(Spacer(1, 10))
 
-    # ── Class Probabilities ───────────────────────────────────────────────────
-    class_probs = additional.get('class_probabilities', {})
-    if class_probs:
-        add(_section_header('📊  Class Probabilities', styles))
-        add(Spacer(1, 4))
-        prob_rows = [['Class', 'Probability', 'Confidence Bar']]
-        for cls_name, prob in sorted(class_probs.items(), key=lambda x: -x[1]):
-            pct = prob * 100
-            bar = '█' * int(pct / 5) + '░' * (20 - int(pct / 5))
-            prob_rows.append([
-                Paragraph(cls_name.replace('_', ' ').capitalize(), styles['body']),
-                Paragraph(f'<b>{pct:.1f}%</b>', styles['body']),
-                Paragraph(f'<font color="#3b82f6">{bar[:int(pct/5)]}</font>'
-                          f'<font color="#e2e8f0">{bar[int(pct/5):]}</font>', styles['small']),
-            ])
-        t = Table(prob_rows, colWidths=[6 * cm, 3 * cm, 8 * cm])
-        t.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), PRIMARY),
-            ('TEXTCOLOR', (0, 0), (-1, 0), WHITE),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 9),
-            ('GRID', (0, 0), (-1, -1), 0.3, BORDER),
-            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [WHITE, LIGHT_BG]),
-            ('TOPPADDING', (0, 0), (-1, -1), 5),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-            ('LEFTPADDING', (0, 0), (-1, -1), 8),
-        ]))
-        add(t)
-        add(Spacer(1, 10))
+
 
     # ── Grad-CAM Heatmap ─────────────────────────────────────────────────────
     heatmap_b64 = additional.get('heatmap_b64')
@@ -316,6 +333,8 @@ def generate_pdf_report(prediction, patient, output_path=None):
             except Exception as e:
                 logger.warning(f'Could not embed heatmap image: {e}')
             add(Spacer(1, 10))
+
+
 
     # ── Clinical Notes Section ───────────────────────────────────────────────
     add(_section_header("📝  Doctor's Clinical Notes & Review", styles))
@@ -363,19 +382,41 @@ def generate_pdf_report(prediction, patient, output_path=None):
         add(Paragraph('Recommendations:', styles['small']))
         add(blank_line_table)
         add(Spacer(1, 4))
-        add(Paragraph('Doctor Signature & Stamp: _________________________  Date: __________', styles['small']))
     add(Spacer(1, 10))
 
-    # ── Disclaimer ───────────────────────────────────────────────────────────
+    # ── Tamper-Proof QR Code & Digital Verification ──────────────────────────
+    dashboard_prefix = '' if base_url.rstrip('/').endswith('/dashboard') else '/dashboard'
+    verify_url = f"{base_url.rstrip('/')}{dashboard_prefix}/verify/report/{prediction.id}"
+    qr_img_path = _generate_qr_temp(verify_url)
+    if qr_img_path:
+        extra_files.append(qr_img_path)
+        sig_hash = hashlib.sha256(f"RPT-{prediction.id}-{patient.id}-{prediction.confidence_score}".encode()).hexdigest()[:16].upper()
+        
+        qr_flowable = RLImage(qr_img_path, width=3.0 * cm, height=3.0 * cm)
+        qr_info = [
+            Paragraph('<b>🔒 Verified Clinical Diagnostic Document</b>', styles['body']),
+            Paragraph(f'<b>Tamper-Proof Digital ID:</b> <font color="#1a56db">ECD-{sig_hash}</font>', styles['small']),
+            Paragraph('Scan QR code to verify authenticity directly on the hospital portal.', styles['small']),
+            Paragraph(f'<a href="{verify_url}" color="#1e40af"><u>{verify_url}</u></a>', styles['small']),
+        ]
+        
+        verify_table = Table([[qr_flowable, qr_info]], colWidths=[3.6 * cm, 13.4 * cm])
+        verify_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), LIGHT_BG),
+            ('BOX', (0, 0), (-1, -1), 0.75, PRIMARY),
+            ('ALIGN', (0, 0), (0, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('LEFTPADDING', (0, 0), (-1, -1), 8),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+            ('ROUNDEDCORNERS', [4, 4, 4, 4]),
+        ]))
+        add(verify_table)
+        add(Spacer(1, 10))
+
+    # ── Report Footer ────────────────────────────────────────────────────────
     add(HRFlowable(width='100%', thickness=0.5, color=BORDER, spaceAfter=6))
-    add(Paragraph(
-        '⚠️  IMPORTANT DISCLAIMER: This report is generated by an Artificial Intelligence system '
-        'for research and educational purposes only. It does NOT constitute a medical diagnosis. '
-        'Always consult a qualified healthcare professional for proper medical evaluation and treatment. '
-        'The AI confidence scores are statistical probabilities and should not be interpreted as definitive diagnoses.',
-        styles['disclaimer']
-    ))
-    add(Spacer(1, 4))
     add(Paragraph(
         f'Generated by AI Early Cancer Detection System  |  '
         f'{datetime.utcnow().strftime("%Y-%m-%d %H:%M")} UTC  |  Report ID: RPT-{prediction.id:05d}',

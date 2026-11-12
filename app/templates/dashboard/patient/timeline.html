@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Longitudinal Health Timeline | AI Early Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1 text-dark">
+        <i class="bi bi-graph-up-arrow text-danger me-2"></i>Longitudinal Patient Tracking
+      </h2>
+      <p class="text-muted mb-0">Chronological analysis of AI cancer screenings, risk progression, and confidence trends.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-danger">
+        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload New Scan
+      </a>
+      <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-clock-history me-1"></i> Full History
+      </a>
+    </div>
+  </div>
+
+  <!-- Summary Metric Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="card card-hospital shadow-sm border-0 h-100">
+        <div class="card-body p-3">
+          <span class="text-muted small d-block mb-1">Total Scans Evaluated</span>
+          <div class="d-flex align-items-baseline gap-2">
+            <span class="display-6 fw-bold text-dark">{{ total_scans }}</span>
+            <span class="text-muted small">radiographs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="card card-hospital shadow-sm border-0 h-100">
+        <div class="card-body p-3">
+          <span class="text-muted small d-block mb-1">Latest Risk Level</span>
+          {% if latest_prediction %}
+            {% set rk = (latest_prediction.risk_level or 'low')|lower %}
+            <span class="badge {% if rk == 'high' %}bg-danger{% elif rk == 'medium' %}bg-warning text-dark{% else %}bg-success{% endif %} fs-6 px-3 py-2 mt-1">
+              {{ rk|upper }} RISK
+            </span>
+          {% else %}
+            <span class="badge bg-secondary fs-6 px-3 py-2 mt-1">NO DATA</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="card card-hospital shadow-sm border-0 h-100">
+        <div class="card-body p-3">
+          <span class="text-muted small d-block mb-1">Confidence Trend</span>
+          {% if trend_delta is not none %}
+            {% if trend_direction == 'increasing' %}
+              <div class="d-flex align-items-baseline gap-2 mt-1">
+                <span class="fs-4 fw-bold text-danger"><i class="bi bi-arrow-up-right"></i> +{{ trend_delta }}%</span>
+                <span class="text-muted small">vs last scan</span>
+              </div>
+            {% elif trend_direction == 'decreasing' %}
+              <div class="d-flex align-items-baseline gap-2 mt-1">
+                <span class="fs-4 fw-bold text-success"><i class="bi bi-arrow-down-right"></i> {{ trend_delta }}%</span>
+                <span class="text-muted small">vs last scan</span>
+              </div>
+            {% else %}
+              <div class="d-flex align-items-baseline gap-2 mt-1">
+                <span class="fs-4 fw-bold text-primary"><i class="bi bi-arrow-right"></i> Stable</span>
+                <span class="text-muted small">&plusmn;{{ trend_delta }}%</span>
+              </div>
+            {% endif %}
+          {% else %}
+            <span class="text-muted small d-block mt-2">Baseline established</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+      <div class="card card-hospital shadow-sm border-0 h-100">
+        <div class="card-body p-3">
+          <span class="text-muted small d-block mb-1">Risk Stratification</span>
+          <div class="d-flex gap-2 mt-2">
+            <span class="badge bg-danger-subtle text-danger border border-danger small">{{ high_risk_count }} High</span>
+            <span class="badge bg-warning-subtle text-warning border border-warning small">{{ medium_risk_count }} Med</span>
+            <span class="badge bg-success-subtle text-success border border-success small">{{ low_risk_count }} Low</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Timeline Progression Chart -->
+  <div class="card card-hospital shadow-sm border-0 mb-5">
+    <div class="card-header bg-white border-bottom border-danger-subtle py-3 d-flex justify-content-between align-items-center">
+      <h6 class="mb-0 fw-bold text-danger">
+        <i class="bi bi-activity me-2"></i>Diagnostic Confidence & Risk Trajectory
+      </h6>
+      <span class="badge bg-light text-muted border">Chart.js Real-time</span>
+    </div>
+    <div class="card-body p-4">
+      {% if total_scans > 0 %}
+      <div style="height: 320px; width: 100%;">
+        <canvas id="timelineChart"></canvas>
+      </div>
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-clipboard-data fs-1 d-block mb-2 text-secondary"></i>
+        <h6>No diagnostic history available yet</h6>
+        <p class="small">Upload medical scans to start tracking longitudinal health trends.</p>
+        <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-danger btn-sm">Upload First Scan</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Chronological Scan History Milestones & Table -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <h5 class="fw-bold text-dark mb-0">
+      <i class="bi bi-clock-history text-danger me-2"></i>Previous Diagnostic Reports & History
+    </h5>
+    <span class="badge bg-light text-secondary border px-3 py-2">
+      <i class="bi bi-collection me-1"></i>{{ total_scans }} Total Records
+    </span>
+  </div>
+
+  {% if predictions %}
+  <!-- Clean Ordered Data Table -->
+  <div class="card card-hospital shadow-sm border-0 mb-4 overflow-hidden">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light text-muted small text-uppercase">
+          <tr>
+            <th class="ps-4 py-3" style="width: 170px;">Date & Time</th>
+            <th style="width: 130px;">Cancer Type</th>
+            <th>AI Finding / Diagnosis</th>
+            <th style="width: 130px;">Confidence</th>
+            <th style="width: 120px;">Risk Level</th>
+            <th style="width: 160px;">AI Model</th>
+            <th class="text-end pe-4" style="width: 140px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pred in predictions|reverse %}
+            {% set risk = (pred.risk_level or 'low')|lower %}
+            <tr>
+              <!-- Date & Time -->
+              <td class="ps-4">
+                <span class="fw-semibold text-dark d-block">
+                  {{ pred.prediction_date.strftime('%Y-%m-%d') if pred.prediction_date else 'N/A' }}
+                </span>
+                <span class="text-muted small">
+                  {{ pred.prediction_date.strftime('%H:%M') if pred.prediction_date else '' }}
+                </span>
+              </td>
+
+              <!-- Cancer Type -->
+              <td>
+                {% if 'brain' in (pred.cancer_type or '') %}
+                  <span class="badge rounded-pill bg-purple-subtle text-purple px-2 py-1" style="background: #F3E8FF; color: #7C3AED;">
+                    🧠 Brain
+                  </span>
+                {% elif 'lung' in (pred.cancer_type or '') %}
+                  <span class="badge rounded-pill bg-info-subtle text-info-emphasis px-2 py-1" style="background: #E0F2FE; color: #0369A1;">
+                    🫁 Lung
+                  </span>
+                {% elif 'skin' in (pred.cancer_type or '') %}
+                  <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis px-2 py-1" style="background: #FEF3C7; color: #B45309;">
+                    🔬 Skin
+                  </span>
+                {% else %}
+                  <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2 py-1">
+                    {{ (pred.cancer_type or 'General')|replace('_', ' ')|title }}
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- AI Finding -->
+              <td>
+                <span class="fw-bold text-dark d-block">
+                  {{ (pred.additional_data.get('label') or pred.prediction_result)|replace('_', ' ')|title }}
+                </span>
+              </td>
+
+              <!-- Confidence -->
+              <td>
+                <div class="fw-bold text-dark">{{ (pred.confidence_score * 100)|round(1) }}%</div>
+                <div class="progress mt-1" style="height: 5px; width: 90px;">
+                  <div class="progress-bar {% if risk == 'high' %}bg-danger{% elif risk == 'medium' %}bg-warning{% else %}bg-success{% endif %}"
+                       role="progressbar"
+                       style="width: {{ (pred.confidence_score * 100)|round(1) }}%"></div>
+                </div>
+              </td>
+
+              <!-- Risk Level Badge -->
+              <td>
+                {% if risk == 'high' %}
+                  <span class="badge bg-danger rounded-pill px-2 py-1">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>High
+                  </span>
+                {% elif risk == 'medium' %}
+                  <span class="badge bg-warning text-dark rounded-pill px-2 py-1">
+                    <i class="bi bi-dash-circle-fill me-1"></i>Medium
+                  </span>
+                {% else %}
+                  <span class="badge bg-success rounded-pill px-2 py-1">
+                    <i class="bi bi-check-circle-fill me-1"></i>Low
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- AI Model -->
+              <td>
+                <span class="text-muted small text-truncate d-inline-block" style="max-width: 150px;" title="{{ pred.model_version }}">
+                  {{ pred.model_version or 'Standard AI' }}
+                </span>
+              </td>
+
+              <!-- Action Buttons -->
+              <td class="text-end pe-4">
+                <div class="btn-group btn-group-sm">
+                  {% if pred.medical_image_id %}
+                  <a href="{{ url_for('dashboard.analysis_result', image_id=pred.medical_image_id) }}" 
+                     class="btn btn-outline-danger" title="View Heatmap & Result">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  {% endif %}
+                  <a href="{{ url_for('dashboard.download_report', prediction_id=pred.id) }}" 
+                     class="btn btn-outline-secondary" title="Download PDF Report">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                  </a>
+                  <a href="{{ url_for('dashboard.verify_report', prediction_id=pred.id) }}" 
+                     class="btn btn-outline-secondary" target="_blank" title="Verify Report">
+                    <i class="bi bi-qr-code"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detailed Timeline Milestone View -->
+  <div class="mb-3">
+    <h6 class="text-muted text-uppercase fw-bold small">
+      <i class="bi bi-diagram-3 text-danger me-1"></i>Detailed Milestone Cards
+    </h6>
+  </div>
+
+  <div class="timeline-container position-relative ps-4" style="border-left: 3px solid #e2e8f0; margin-left: 15px;">
+    {% for pred in predictions|reverse %}
+      {% set risk = (pred.risk_level or 'low')|lower %}
+      <div class="timeline-item position-relative mb-4">
+        <!-- Milestone marker point -->
+        <div class="position-absolute rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+             style="width: 24px; height: 24px; left: -37px; top: 12px; background: {% if risk == 'high' %}#dc2626{% elif risk == 'medium' %}#d97706{% else %}#16a34a{% endif %}; border: 3px solid #fff;">
+        </div>
+
+        <div class="card card-hospital border-0 shadow-sm">
+          <div class="card-body p-3 p-md-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2 pb-2 border-bottom">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-dark border">
+                  <i class="bi bi-calendar3 me-1"></i>{{ pred.prediction_date.strftime('%B %d, %Y - %H:%M') if pred.prediction_date else 'N/A' }}
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary text-uppercase">{{ pred.cancer_type|replace('_', ' ') }}</span>
+              </div>
+              <span class="badge {% if risk == 'high' %}bg-danger{% elif risk == 'medium' %}bg-warning text-dark{% else %}bg-success{% endif %} px-3 py-1">
+                {{ risk|upper }} RISK
+              </span>
+            </div>
+
+            <div class="row align-items-center g-3 mt-1">
+              <div class="col-md-8">
+                <h5 class="fw-bold text-dark mb-1">
+                  {{ (pred.additional_data.get('label') or pred.prediction_result)|replace('_', ' ')|title }}
+                </h5>
+                <div class="d-flex align-items-center gap-3 text-muted small mb-2 flex-wrap">
+                  <span>Confidence: <strong class="text-dark">{{ (pred.confidence_score * 100)|round(1) }}%</strong></span>
+                  <span>Model: <code>{{ pred.model_version or 'AI-Model' }}</code></span>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress" style="height: 6px; max-width: 280px;">
+                  <div class="progress-bar {% if risk == 'high' %}bg-danger{% elif risk == 'medium' %}bg-warning{% else %}bg-success{% endif %}"
+                       role="progressbar"
+                       style="width: {{ (pred.confidence_score * 100)|round(1) }}%"></div>
+                </div>
+              </div>
+
+              <div class="col-md-4 text-md-end">
+                <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                  {% if pred.medical_image_id %}
+                  <a href="{{ url_for('dashboard.analysis_result', image_id=pred.medical_image_id) }}" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-eye me-1"></i> Result & Heatmap
+                  </a>
+                  {% endif %}
+                  <a href="{{ url_for('dashboard.download_report', prediction_id=pred.id) }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                  </a>
+                  <a href="{{ url_for('dashboard.verify_report', prediction_id=pred.id) }}" class="btn btn-sm btn-outline-secondary" target="_blank" title="Verify via QR Link">
+                    <i class="bi bi-qr-code"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card card-hospital border-0 shadow-sm p-5 text-center text-muted">
+    <i class="bi bi-clipboard2-x fs-1 text-secondary mb-2"></i>
+    <h6>No previous diagnostic reports found</h6>
+    <p class="small mb-3">Upload your first radiological scan to start tracking history.</p>
+    <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-danger btn-sm align-self-center">
+      <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Scan
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- Chart.js Script loaded inside content block -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('timelineChart');
+    if (!ctx) return;
+
+    const labels = {{ timeline_labels | tojson }};
+    const confidences = {{ timeline_confidences | tojson }};
+    const risks = {{ timeline_risks | tojson }};
+
+    if (!labels || labels.length === 0) return;
+
+    const pointColors = risks.map(r => {
+      if (r === 'high') return '#dc2626';
+      if (r === 'medium') return '#d97706';
+      return '#16a34a';
+    });
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'AI Diagnostic Confidence (%)',
+          data: confidences,
+          borderColor: '#dc2626',
+          backgroundColor: 'rgba(220, 38, 38, 0.08)',
+          borderWidth: 3,
+          tension: 0.35,
+          fill: true,
+          pointBackgroundColor: pointColors,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 6,
+          pointHoverRadius: 9
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: { boxWidth: 14, font: { family: 'inherit', size: 12 } }
+          },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+              label: function(context) {
+                const idx = context.dataIndex;
+                const riskVal = risks[idx] ? risks[idx].toUpperCase() : 'UNKNOWN';
+                return ` Confidence: ${context.parsed.y}% (${riskVal} RISK)`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { callback: v => v + '%' },
+            grid: { color: '#f1f5f9' }
+          },
+          x: {
+            grid: { color: '#f1f5f9' }
+          }
+        }
+      }
+    });
+  });
+  </script>
+
+</div>
+{% endblock %}

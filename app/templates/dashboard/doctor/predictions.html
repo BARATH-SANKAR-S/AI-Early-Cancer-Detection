@@ -84,9 +84,12 @@
                                         <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-sm btn-outline-danger me-1" title="Download Report">
                                             <i class="bi bi-file-earmark-pdf"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-success me-1" data-bs-toggle="modal" data-bs-target="#quickReviewModal{{ prediction.id }}" title="Clinical Review">
-                                            <i class="bi bi-pencil-square"></i>
+                                        <button class="btn btn-sm btn-outline-success me-1" data-bs-toggle="modal" data-bs-target="#quickReviewModal{{ prediction.id }}" title="Clinical Review Note">
+                                            <i class="bi bi-chat-left-text"></i>
                                         </button>
+                                        <a href="{{ url_for('dashboard.doctor_annotation', prediction_id=prediction.id) }}" class="btn btn-sm btn-outline-danger me-1" title="Annotate for Active Learning">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
                                         <a href="{{ url_for('dashboard.doctor_patient_detail', patient_id=prediction.patient.id) }}" class="btn btn-sm btn-outline-secondary" title="Patient Profile">
                                             <i class="bi bi-person"></i>
                                         </a>

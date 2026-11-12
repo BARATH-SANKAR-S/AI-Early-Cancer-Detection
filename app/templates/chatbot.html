@@ -1,0 +1,893 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Marked.js for rendering rich Markdown in chatbot responses -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+.chat-page-wrapper {
+    background: linear-gradient(180deg, #FFF5F5 0%, #F8FAFC 100%);
+    min-height: calc(100vh - 140px);
+    padding: 30px 15px 50px;
+}
+
+.chat-container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(220, 38, 38, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(220, 38, 38, 0.12);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 780px;
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+    color: #ffffff;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(185, 28, 28, 0.15);
+}
+
+.chat-header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.chat-header-avatar {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+
+.message-row {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 12px;
+}
+
+.message-row.user-row {
+    justify-content: flex-end;
+}
+
+.message-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.bot-avatar {
+    background: #FEE2E2;
+    color: #DC2626;
+    border: 1.5px solid #FCA5A5;
+}
+
+.user-avatar {
+    background: #DC2626;
+    color: #ffffff;
+}
+
+.message-bubble {
+    max-width: 82%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.user-message {
+    background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+.user-message p {
+    margin-bottom: 0;
+    color: #ffffff;
+}
+
+.bot-message {
+    background: #ffffff;
+    color: #1E293B;
+    border: 1px solid #E2E8F0;
+    border-bottom-left-radius: 4px;
+}
+
+.bot-message h3, .bot-message h4 {
+    color: #991B1B;
+    margin-top: 10px;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.bot-message h3 {
+    font-size: 1.15rem;
+    border-bottom: 1.5px solid #FEE2E2;
+    padding-bottom: 6px;
+}
+
+.bot-message h4 {
+    font-size: 1.02rem;
+}
+
+.bot-message p {
+    margin-bottom: 10px;
+}
+
+.bot-message ul, .bot-message ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+.bot-message li {
+    margin-bottom: 4px;
+}
+
+.bot-message blockquote {
+    background: #FEF2F2;
+    border-left: 3.5px solid #DC2626;
+    padding: 8px 14px;
+    margin: 10px 0;
+    border-radius: 0 6px 6px 0;
+    color: #475569;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.sources-box {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #475569;
+}
+
+.sources-box strong {
+    color: #0F172A;
+}
+
+.disclaimer-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #FFFBEB;
+    border-left: 4px solid #F59E0B;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #78350F;
+}
+
+.bot-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.action-btn {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.action-btn:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+    border-color: #FCA5A5;
+}
+
+/* Quick prompt chips */
+.quick-prompts-area {
+    padding: 10px 20px;
+    background: #ffffff;
+    border-top: 1px solid #F1F5F9;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
+}
+
+.quick-prompts-area::-webkit-scrollbar {
+    height: 4px;
+}
+
+.quick-prompts-area::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 2px;
+}
+
+.prompt-chip {
+    background: #FFF5F5;
+    border: 1px solid #FECACA;
+    color: #B91C1C;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.prompt-chip:hover {
+    background: #DC2626;
+    color: #ffffff;
+    border-color: #DC2626;
+    transform: translateY(-1px);
+}
+
+.chat-input-area {
+    padding: 16px 20px;
+    background: #ffffff;
+    border-top: 1px solid #E2E8F0;
+}
+
+.chat-input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 30px;
+    padding: 4px 8px 4px 18px;
+    transition: all 0.25s ease;
+}
+
+.chat-input-wrapper:focus-within {
+    border-color: #DC2626;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.chat-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.95rem;
+    padding: 8px 4px;
+    color: #1E293B;
+}
+
+.chat-input::placeholder {
+    color: #94A3B8;
+}
+
+.voice-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #F1F5F9;
+    color: #64748B;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.voice-btn:hover {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.voice-btn.listening {
+    background: #DC2626;
+    color: white;
+    animation: voicePulse 1.4s infinite;
+}
+
+@keyframes voicePulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
+}
+
+.send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #DC2626;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+}
+
+.send-btn:hover {
+    background: #B91C1C;
+    transform: scale(1.05);
+}
+
+.send-btn:disabled {
+    background: #E2E8F0;
+    color: #94A3B8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.typing-indicator {
+    display: flex;
+    gap: 5px;
+    padding: 12px 18px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #E2E8F0;
+    width: fit-content;
+    align-items: center;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    background: #DC2626;
+    border-radius: 50%;
+    animation: typingAnim 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingAnim {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+.clear-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.clear-btn:hover {
+    background: #ffffff;
+    color: #DC2626;
+}
+
+/* ── Welcome Panel ─────────────────────────────────── */
+.welcome-panel {
+    background: linear-gradient(135deg, #fff5f5 0%, #fff8f8 100%);
+    border-bottom: 1px solid #fee2e2;
+    padding: 16px 24px;
+    flex-shrink: 0;
+}
+
+.welcome-panel-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.welcome-icon-col {
+    flex-shrink: 0;
+}
+
+.welcome-icon {
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.2));
+}
+
+.welcome-content-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.welcome-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #991B1B;
+    margin: 0 0 4px;
+}
+
+.welcome-subtitle {
+    font-size: 0.83rem;
+    color: #475569;
+    margin: 0 0 10px;
+}
+
+.welcome-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.topic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #ffffff;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    border-radius: 20px;
+    padding: 3px 11px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s;
+}
+
+.topic-tag i {
+    font-size: 0.82rem;
+}
+
+.welcome-notice {
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    border-radius: 0 6px 6px 0;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    color: #78350f;
+}
+
+/* Adjust chat-messages flex so welcome-panel + messages + input fill the container */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    background: #F8FAFC;
+    scroll-behavior: smooth;
+    min-height: 0;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+</style>
+
+<div class="chat-page-wrapper">
+    <div class="chat-container">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-title">
+                <div class="chat-header-avatar">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">AI Cancer Information Assistant</h5>
+                    <small style="opacity: 0.88; font-size: 0.82rem;">
+                        <i class="bi bi-shield-check me-1"></i> Powered by NCI &amp; WHO Knowledge Base
+                    </small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="clear-btn" onclick="clearChat()" title="Reset conversation">
+                    <i class="bi bi-trash3 me-1"></i> Clear Chat
+                </button>
+            </div>
+        </div>
+
+        <!-- Always-visible Welcome Info Panel -->
+        <div class="welcome-panel" id="welcomePanel">
+            <div class="welcome-panel-inner">
+                <div class="welcome-icon-col">
+                    <div class="welcome-icon">🩺</div>
+                </div>
+                <div class="welcome-content-col">
+                    <h5 class="welcome-title">Welcome to the Oncology AI Assistant</h5>
+                    <p class="welcome-subtitle">I am trained on official <strong>NCI</strong> &amp; <strong>WHO</strong> oncology literature and can answer:</p>
+                    <div class="welcome-topics">
+                        <span class="topic-tag"><i class="bi bi-lungs-fill"></i> Cancer Types &amp; Symptoms</span>
+                        <span class="topic-tag"><i class="bi bi-bar-chart-steps"></i> Stages &amp; Biology</span>
+                        <span class="topic-tag"><i class="bi bi-capsule-pill"></i> Treatments &amp; Therapies</span>
+                        <span class="topic-tag"><i class="bi bi-bandaid"></i> Side Effect Relief</span>
+                        <span class="topic-tag"><i class="bi bi-shield-plus"></i> Prevention &amp; Screening</span>
+                        <span class="topic-tag"><i class="bi bi-robot"></i> Hospital AI Models</span>
+                    </div>
+                    <div class="welcome-notice">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <strong>Medical Notice:</strong> Educational only — not a substitute for professional clinical diagnosis.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat messages area (scrollable conversation) -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Conversation messages will appear here -->
+        </div>
+
+        <!-- Quick prompts chips -->
+        <div class="quick-prompts-area" id="quickPrompts">
+            <button class="prompt-chip" onclick="askQuickPrompt('What is cancer?')">
+                <i class="bi bi-question-circle me-1"></i> What is cancer?
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('What are the 7 early warning signs of cancer?')">
+                <i class="bi bi-exclamation-circle me-1"></i> 7 Early Warning Signs
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('What are the symptoms of lung cancer?')">
+                <i class="bi bi-lungs me-1"></i> Lung cancer symptoms
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('How is breast cancer treated?')">
+                <i class="bi bi-ribbon me-1"></i> Breast cancer treatment
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('Tell me about chemotherapy side effects')">
+                <i class="bi bi-capsule me-1"></i> Chemo side effects
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('How does the ABCDE rule work for skin cancer?')">
+                <i class="bi bi-shield me-1"></i> Skin cancer ABCDE rule
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('What causes leukemia?')">
+                <i class="bi bi-droplet me-1"></i> Leukemia causes &amp; types
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('What is stage 4 cancer?')">
+                <i class="bi bi-bar-chart me-1"></i> Cancer staging (TNM)
+            </button>
+            <button class="prompt-chip" onclick="askQuickPrompt('How can cancer be prevented?')">
+                <i class="bi bi-heart-pulse me-1"></i> Prevention guidelines
+            </button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+            <div class="chat-input-wrapper">
+                <button class="voice-btn" id="voiceBtn" onclick="toggleVoiceInput()" title="Voice input (Microphone)">
+                    <i class="bi bi-mic" id="voiceIcon"></i>
+                </button>
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask any cancer question (symptoms, treatments, prevention, staging)..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled title="Send message">
+                    <i class="bi bi-arrow-up-short" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2 px-2">
+                <small class="text-muted" id="voiceStatus" style="font-size: 0.78rem;"></small>
+                <small class="text-muted" style="font-size: 0.76rem;">
+                    <i class="bi bi-info-circle me-1"></i> Non-cancer questions are politely redirected to maintain oncology focus.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let isListening = false;
+let recognition = null;
+let synthesis = window.speechSynthesis;
+let currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+
+// Markdown configuration
+if (typeof marked !== 'undefined') {
+    marked.setOptions({
+        breaks: true,
+        gfm: true
+    });
+}
+
+// Speech Recognition Setup
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = function() {
+        isListening = true;
+        document.getElementById('voiceBtn').classList.add('listening');
+        document.getElementById('voiceIcon').className = 'bi bi-mic-fill text-white';
+        document.getElementById('voiceStatus').textContent = 'Listening... Speak your cancer question';
+    };
+
+    recognition.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+            document.getElementById('chatInput').value = transcript;
+            updateSendButton();
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.warn('Speech recognition notice:', event.error);
+        stopListening();
+        document.getElementById('voiceStatus').textContent = 'Speech input ended';
+    };
+
+    recognition.onend = function() {
+        stopListening();
+    };
+} else {
+    const vBtn = document.getElementById('voiceBtn');
+    if (vBtn) vBtn.style.display = 'none';
+}
+
+function toggleVoiceInput() {
+    if (isListening) {
+        stopListening();
+    } else {
+        if (recognition) {
+            try { recognition.start(); } catch (e) { console.log(e); }
+        }
+    }
+}
+
+function stopListening() {
+    if (recognition) {
+        try { recognition.stop(); } catch (e) {}
+    }
+    isListening = false;
+    const vBtn = document.getElementById('voiceBtn');
+    const vIcon = document.getElementById('voiceIcon');
+    if (vBtn) vBtn.classList.remove('listening');
+    if (vIcon) vIcon.className = 'bi bi-mic';
+    const vStatus = document.getElementById('voiceStatus');
+    if (vStatus) vStatus.textContent = '';
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+function updateSendButton() {
+    const input = document.getElementById('chatInput');
+    document.getElementById('sendBtn').disabled = !input.value.trim();
+}
+
+document.getElementById('chatInput').addEventListener('input', updateSendButton);
+
+function askQuickPrompt(text) {
+    document.getElementById('chatInput').value = text;
+    updateSendButton();
+    sendMessage();
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const query = input.value.trim();
+    if (!query) return;
+
+    // Add user message bubble
+    addUserMessage(query);
+    input.value = '';
+    document.getElementById('sendBtn').disabled = true;
+
+    // Show typing indicator
+    showTypingIndicator();
+
+    try {
+        const response = await fetch('/api/chatbot/query', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: query,
+                session_id: currentSessionId
+            })
+        });
+
+        const data = await response.json();
+        hideTypingIndicator();
+
+        if (!response.ok) {
+            addBotResponse({
+                response: data.error || 'I encountered an error processing your query. Please try again.',
+                disclaimer: '⚠️ Service temporarily unavailable.'
+            });
+            return;
+        }
+
+        if (data.session_id) {
+            currentSessionId = data.session_id;
+        }
+
+        addBotResponse(data);
+
+    } catch (error) {
+        console.error('Chat error:', error);
+        hideTypingIndicator();
+        addBotResponse({
+            response: '⚠️ Unable to connect to the medical knowledge server. Please verify your connection and try again.',
+            disclaimer: 'Connection error'
+        });
+    }
+}
+
+function addUserMessage(text) {
+    const chatMessages = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'message-row user-row';
+    
+    // Escape HTML for user text
+    const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    
+    row.innerHTML = `
+        <div class="message-bubble user-message">
+            <p>${escaped}</p>
+        </div>
+        <div class="message-avatar user-avatar">
+            <i class="bi bi-person-fill"></i>
+        </div>
+    `;
+    chatMessages.appendChild(row);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function addBotResponse(data) {
+    const chatMessages = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'message-row';
+
+    // Parse Markdown if marked library is available
+    let renderedText = data.response;
+    if (typeof marked !== 'undefined') {
+        renderedText = marked.parse(data.response);
+    } else {
+        renderedText = '<p>' + data.response.replace(/\n/g, '<br>') + '</p>';
+    }
+
+    let disclaimerHtml = '';
+    if (data.disclaimer) {
+        disclaimerHtml = `
+            <div class="disclaimer-box">
+                <i class="bi bi-shield-exclamation me-1"></i>
+                ${data.disclaimer}
+            </div>
+        `;
+    }
+
+    // Prepare speech text (strip markdown)
+    const plainText = data.response.replace(/[#*`_>]/g, '').replace(/\[.*?\]/g, '');
+    const cleanSpeech = encodeURIComponent(plainText.substring(0, 500));
+
+    row.innerHTML = `
+        <div class="message-avatar bot-avatar">
+            <i class="bi bi-robot"></i>
+        </div>
+        <div class="message-bubble bot-message">
+            ${renderedText}
+            ${disclaimerHtml}
+            <div class="bot-actions">
+                <button class="action-btn" onclick="speakResponse('${cleanSpeech}')" title="Listen to answer">
+                    <i class="bi bi-volume-up-fill"></i> Listen
+                </button>
+                <button class="action-btn" onclick="copyResponse(this)" title="Copy text">
+                    <i class="bi bi-clipboard"></i> Copy
+                </button>
+            </div>
+        </div>
+    `;
+
+    chatMessages.appendChild(row);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function showTypingIndicator() {
+    const chatMessages = document.getElementById('chatMessages');
+    const row = document.createElement('div');
+    row.className = 'message-row';
+    row.id = 'typingRow';
+    row.innerHTML = `
+        <div class="message-avatar bot-avatar">
+            <i class="bi bi-robot"></i>
+        </div>
+        <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span class="ms-2 text-muted small">Consulting oncology knowledge base...</span>
+        </div>
+    `;
+    chatMessages.appendChild(row);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typingRow = document.getElementById('typingRow');
+    if (typingRow) {
+        typingRow.remove();
+    }
+}
+
+function speakResponse(encodedText) {
+    if (!synthesis) return;
+    synthesis.cancel();
+    const text = decodeURIComponent(encodedText);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.95;
+    synthesis.speak(utterance);
+}
+
+function copyResponse(btn) {
+    const bubble = btn.closest('.bot-message');
+    if (!bubble) return;
+    const text = bubble.innerText.replace(/Listen|Copy/g, '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check2 text-success"></i> Copied!';
+        setTimeout(() => { btn.innerHTML = original; }, 2000);
+    });
+}
+
+async function clearChat() {
+    if (confirm('Are you sure you want to clear this conversation?')) {
+        try {
+            await fetch(`/api/chatbot/history/clear?session_id=${encodeURIComponent(currentSessionId)}`, {
+                method: 'DELETE'
+            });
+        } catch (e) {
+            console.warn(e);
+        }
+
+        // Clear only the conversation messages; welcome panel stays visible
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+        currentSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+    }
+}
+
+// Load previous chat history if available
+async function loadChatHistory() {
+    try {
+        const response = await fetch(`/api/chatbot/history?limit=15&session_id=${encodeURIComponent(currentSessionId)}`);
+        const data = await response.json();
+        if (data.history && data.history.length > 0) {
+            // Load history into the chat area (welcome panel stays visible separately)
+            [...data.history].reverse().forEach(msg => {
+                addUserMessage(msg.query);
+                addBotResponse({
+                    response: msg.response,
+                    citations: msg.citations,
+                    disclaimer: '⚠️ MEDICAL DISCLAIMER: This information is for educational purposes only and does not constitute medical advice, diagnosis, or treatment.'
+                });
+            });
+        }
+    } catch (error) {
+        console.log('No prior history loaded.');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadChatHistory);
+</script>
+{% endblock %}

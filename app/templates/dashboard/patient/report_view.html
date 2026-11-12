@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Verified Medical Report | AI Early Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- Certificate Header Banner -->
+      <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-gradient bg-primary text-white p-4 text-center position-relative">
+          <div class="d-inline-flex align-items-center justify-content-center bg-white text-primary rounded-circle mb-3 shadow" style="width: 64px; height: 64px;">
+            <i class="bi bi-shield-check fs-2"></i>
+          </div>
+          <h3 class="fw-bold mb-1">Official Medical Report Verification</h3>
+          <p class="mb-0 text-white-50">Central Oncology AI Diagnostic & Radiological Registry</p>
+          <div class="position-absolute top-0 end-0 m-3">
+            <span class="badge bg-success px-3 py-2 fs-6 shadow-sm">
+              <i class="bi bi-check-circle-fill me-1"></i> Digitally Verified
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+          <!-- Verification Hash Box -->
+          <div class="p-3 mb-4 rounded-3 border border-primary-subtle bg-light d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+              <span class="text-muted small d-block">Tamper-Proof Verification Hash</span>
+              <code class="fw-bold text-primary fs-6">ECD-{{ verification_hash }}</code>
+            </div>
+            <div class="text-end">
+              <span class="text-muted small d-block">Report Reference</span>
+              <span class="fw-bold text-dark">RPT-{{ "%05d"|format(prediction.id) }}</span>
+            </div>
+          </div>
+
+          <!-- Key Diagnostic Data Grid -->
+          <h5 class="fw-bold text-dark border-bottom pb-2 mb-3">
+            <i class="bi bi-file-medical text-primary me-2"></i>Clinical Summary
+          </h5>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-white border">
+                <small class="text-muted d-block">Patient Name</small>
+                <strong class="fs-6 text-dark">
+                  {% if current_user.is_authenticated and (current_user.id == patient.id or current_user.is_doctor() or current_user.is_admin()) %}
+                    {{ patient.full_name }}
+                  {% else %}
+                    {{ patient.full_name[:1] }}*** {{ patient.full_name.split()[-1][:1] }}*** (Protected)
+                  {% endif %}
+                </strong>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-white border">
+                <small class="text-muted d-block">Scan Date & Timestamp</small>
+                <strong class="fs-6 text-dark">{{ prediction.prediction_date.strftime('%d %b %Y, %H:%M UTC') if prediction.prediction_date else 'N/A' }}</strong>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-white border">
+                <small class="text-muted d-block">Diagnostic Target</small>
+                <strong class="fs-6 text-dark text-capitalize">{{ (prediction.cancer_type or 'General').replace('_', ' ') }}</strong>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="p-3 rounded-3 bg-white border">
+                <small class="text-muted d-block">AI Model Architecture</small>
+                <strong class="fs-6 text-dark">{{ prediction.model_version or 'Deep CNN Ensemble' }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagnosis Finding & Risk Stratification -->
+          <div class="p-4 rounded-3 mb-4 {% if prediction.risk_level == 'high' %}bg-danger-subtle border border-danger{% elif prediction.risk_level == 'medium' %}bg-warning-subtle border border-warning{% else %}bg-success-subtle border border-success{% endif %}">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <small class="fw-bold text-uppercase tracking-wider {% if prediction.risk_level == 'high' %}text-danger{% elif prediction.risk_level == 'medium' %}text-warning-emphasis{% else %}text-success{% endif %}">
+                  AI Evaluated Finding
+                </small>
+                <h4 class="fw-bold mb-1 text-dark">
+                  {{ (prediction.additional_data.get('label') or prediction.prediction_result or 'Evaluated Finding')|replace('_', ' ')|title }}
+                </h4>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge {% if prediction.risk_level == 'high' %}bg-danger{% elif prediction.risk_level == 'medium' %}bg-warning text-dark{% else %}bg-success{% endif %} px-3 py-1">
+                    Risk: {{ (prediction.risk_level or 'Standard')|capitalize }}
+                  </span>
+                  <span class="text-dark small fw-semibold">
+                    Statistical Confidence: {{ (prediction.confidence_score * 100)|round(1) }}%
+                  </span>
+                </div>
+              </div>
+              <div class="text-end">
+                <i class="bi {% if prediction.risk_level == 'high' %}bi-exclamation-triangle-fill text-danger{% elif prediction.risk_level == 'medium' %}bi-shield-exclamation text-warning{% else %}bi-shield-check text-success{% endif %} display-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grad-CAM Heatmap Preview if available -->
+          {% if prediction.additional_data and prediction.additional_data.get('heatmap_b64') %}
+          <div class="mb-4">
+            <h6 class="fw-bold text-dark mb-2">
+              <i class="bi bi-fire text-danger me-2"></i>Grad-CAM Attention Heatmap (Embedded)
+            </h6>
+            <div class="text-center bg-dark p-3 rounded-3">
+              <img src="{{ prediction.additional_data.get('heatmap_b64') }}" alt="Grad-CAM Heatmap" class="img-fluid rounded shadow" style="max-height: 240px;">
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Doctor Review notes if available -->
+          {% if prediction.doctor_notes %}
+          <div class="mb-4">
+            <h6 class="fw-bold text-dark mb-2">
+              <i class="bi bi-person-check-fill text-primary me-2"></i>Attending Physician Review
+            </h6>
+            {% for note in prediction.doctor_notes %}
+            <div class="p-3 bg-light border rounded-3 mb-2">
+              <div class="d-flex justify-content-between mb-1">
+                <strong>Dr. {{ note.doctor.full_name }}</strong>
+                <span class="badge bg-primary-subtle text-primary">{{ note.status|upper }}</span>
+              </div>
+              <p class="mb-0 text-muted small">{{ note.note_text }}</p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pt-3 border-top">
+            <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-primary px-4">
+              <i class="bi bi-file-earmark-pdf me-2"></i>Download Official PDF Report
+            </a>
+            {% if current_user.is_authenticated and current_user.is_patient() %}
+            <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left me-1"></i>Return to History
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Security Footer -->
+        <div class="card-footer bg-light text-center py-3 text-muted small">
+          <i class="bi bi-lock-fill text-success me-1"></i>
+          Cryptographically authenticated document issued by AI Early Cancer Detection Health Network.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

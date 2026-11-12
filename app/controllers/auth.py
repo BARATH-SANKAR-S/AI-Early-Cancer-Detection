@@ -54,7 +54,10 @@ def login():
         next_page = request.args.get('next')
         return redirect(next_page) if next_page else redirect(url_for('main.index'))
     
-    return render_template('auth/login.html', form=form, portal_role=role)
+    # Pass registered accounts so users can see usernames (no passwords shown)
+    registered_accounts = User.query.order_by(User.role, User.full_name).all()
+    return render_template('auth/login.html', form=form, portal_role=role,
+                           registered_accounts=registered_accounts)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():

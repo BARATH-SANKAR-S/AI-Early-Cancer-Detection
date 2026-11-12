@@ -1,162 +1,245 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="display-5">Patient Dashboard</h1>
-                <span class="badge bg-success fs-6">Welcome, {{ user.full_name }}</span>
+<div class="container py-4">
+    <!-- Header Greeting with Clinical Status -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-4 rounded-4 bg-white shadow-sm border border-light">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                 style="width: 58px; height: 58px; background: linear-gradient(135deg, #E11D48, #9F1239); font-size: 1.4rem;">
+                {{ user.full_name[0] }}
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2">
+                    <h2 class="mb-0 fw-bold text-dark">{{ user.full_name }}</h2>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 small fw-semibold">
+                        <i class="bi bi-shield-check me-1"></i> Patient Verified
+                    </span>
+                </div>
+                <p class="text-muted mb-0 small mt-1">Medical Record #{{ "%05d"|format(user.id) }} &bull; District: {{ user.district or 'Erode' }}</p>
             </div>
         </div>
-    </div>
-    
-    <!-- Quick Stats -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card shadow border-0 bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-clipboard-data display-4 me-3"></i>
-                        <div>
-                            <h3 class="card-title mb-0">{{ prediction_count }}</h3>
-                            <p class="card-text mb-0">Total Predictions</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow border-0 bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-person-check display-4 me-3"></i>
-                        <div>
-                            <h3 class="card-title mb-0">Active</h3>
-                            <p class="card-text mb-0">Account Status</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow border-0 bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-calendar-check display-4 me-3"></i>
-                        <div>
-                            <h3 class="card-title mb-0">{{ user.created_at.strftime('%B %Y') }}</h3>
-                            <p class="card-text mb-0">Member Since</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Quick Actions -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h3 class="mb-3">Quick Actions</h3>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('dashboard.clinical_data') }}" class="card text-decoration-none h-100">
-                <div class="card-body text-center shadow">
-                    <i class="bi bi-file-medical display-4 text-primary mb-3"></i>
-                    <h5 class="card-title">Submit Clinical Data</h5>
-                    <p class="card-text text-muted">Provide symptoms and medical history</p>
-                </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red shadow-sm">
+                <i class="bi bi-cloud-arrow-up-fill me-1"></i> New Scan Analysis
             </a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('dashboard.upload_image') }}" class="card text-decoration-none h-100">
-                <div class="card-body text-center shadow">
-                    <i class="bi bi-upload display-4 text-success mb-3"></i>
-                    <h5 class="card-title">Upload Medical Image</h5>
-                    <p class="card-text text-muted">Upload X-rays, scans, or reports</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('dashboard.patient_history') }}" class="card text-decoration-none h-100">
-                <div class="card-body text-center shadow">
-                    <i class="bi bi-clock-history display-4 text-warning mb-3"></i>
-                    <h5 class="card-title">View History</h5>
-                    <p class="card-text text-muted">Check your prediction history</p>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-3 mb-3">
-            <a href="{{ url_for('auth.profile') }}" class="card text-decoration-none h-100">
-                <div class="card-body text-center shadow">
-                    <i class="bi bi-person-circle display-4 text-info mb-3"></i>
-                    <h5 class="card-title">My Profile</h5>
-                    <p class="card-text text-muted">Update your personal information</p>
-                </div>
+            <a href="{{ url_for('chatbot.chatbot_page') }}" class="btn btn-outline-danger rounded-3 px-3 fw-semibold">
+                <i class="bi bi-chat-heart-fill me-1"></i> Ask Oncology AI
             </a>
         </div>
     </div>
     
-    <!-- Recent Predictions -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Predictions</h5>
-                </div>
-                <div class="card-body">
-                    {% if recent_predictions %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Result</th>
-                                    <th>Confidence</th>
-                                    <th>Risk</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for prediction in recent_predictions %}
-                                <tr>
-                                    <td>{{ prediction.prediction_type|capitalize }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' else 'success' }}">
-                                            {{ prediction.prediction_result|capitalize }}
-                                        </span>
-                                    </td>
-                                    <td>{{ "%.1f"|format(prediction.confidence_score * 100) }}%</td>
-                                    <td>
-                                        {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
-                                        {% if risk == 'high' %}
-                                            <span class="badge bg-danger">⚠ High</span>
-                                        {% elif risk == 'medium' %}
-                                            <span class="badge bg-warning text-dark">◑ Medium</span>
-                                        {% elif risk == 'low' %}
-                                            <span class="badge bg-success">✓ Low</span>
-                                        {% else %}
-                                            <span class="text-muted">—</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+    <!-- Quick Clinical Metric Counters -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 p-3 shadow-sm bg-white position-relative overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase tracking-wider">Completed Screenings</span>
+                        <h2 class="fw-extrabold mb-0 mt-2 text-dark">{{ prediction_count }}</h2>
+                        <span class="badge bg-danger-subtle text-danger mt-2">Radiological &amp; Clinical</span>
                     </div>
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-outline-primary">View All Predictions</a>
+                    <div class="rounded-4 p-3 d-flex align-items-center justify-content-center text-danger"
+                         style="background: #FFF1F2; width: 54px; height: 54px; font-size: 1.5rem;">
+                        <i class="bi bi-activity"></i>
                     </div>
-                    {% else %}
-                    <div class="text-center py-4">
-                        <i class="bi bi-inbox display-4 text-muted mb-3"></i>
-                        <p class="text-muted">No predictions yet. Start by submitting clinical data or uploading an image.</p>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 p-3 shadow-sm bg-white position-relative overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase tracking-wider">Diagnostic Modalities</span>
+                        <h2 class="fw-extrabold mb-0 mt-2 text-dark">3 AI Engines</h2>
+                        <span class="badge bg-primary-subtle text-primary mt-2">Brain &bull; Lung &bull; Skin</span>
+                    </div>
+                    <div class="rounded-4 p-3 d-flex align-items-center justify-content-center text-primary"
+                         style="background: #EFF6FF; width: 54px; height: 54px; font-size: 1.5rem;">
+                        <i class="bi bi-cpu-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 rounded-4 p-3 shadow-sm bg-white position-relative overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small fw-bold text-uppercase tracking-wider">Care Team Status</span>
+                        <h2 class="fw-extrabold mb-0 mt-2 text-dark">Active</h2>
+                        <span class="badge bg-success-subtle text-success mt-2">Erode Health Network</span>
+                    </div>
+                    <div class="rounded-4 p-3 d-flex align-items-center justify-content-center text-success"
+                         style="background: #F0FDF4; width: 54px; height: 54px; font-size: 1.5rem;">
+                        <i class="bi bi-hospital"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Grid -->
+    <div class="mb-4">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-grid-fill text-danger me-2"></i>Clinical Services &amp; Tools</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('dashboard.upload_image') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-danger" style="background: #FFF1F2; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Scan Upload</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">CT, MRI, Dermoscopy</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('dashboard.clinical_data') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-primary" style="background: #EFF6FF; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-file-earmark-medical-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Clinical Profile</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">Symptoms &amp; History</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('dashboard.patient_timeline') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-success" style="background: #F0FDF4; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Timeline</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">Progression Tracking</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('dashboard.geographic_risk') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-info" style="background: #F0FDFA; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Risk Map</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">Erode District Heatmap</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('dashboard.patient_history') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-warning" style="background: #FFFBEB; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-archive-fill"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Report Archive</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">PDFs &amp; Heatmaps</span>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="card text-decoration-none h-100 border-0 rounded-4 shadow-sm bg-white text-center p-3 hover-scale">
+                    <div class="mx-auto rounded-3 p-2 mb-2 d-flex align-items-center justify-content-center text-danger" style="background: #FFF1F2; width: 48px; height: 48px; font-size: 1.3rem;">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark mb-1 small">Oncology Bot</h6>
+                    <span class="text-muted" style="font-size: 0.75rem;">Clinical Guidance</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Screening History Table -->
+    <div class="card border-0 rounded-4 shadow-sm bg-white overflow-hidden">
+        <div class="card-header bg-white border-bottom border-light py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history text-danger me-2"></i>Recent AI Diagnostic Reports</h6>
+            <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-sm btn-link text-danger text-decoration-none fw-semibold">
+                View All Archive &rarr;
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_predictions %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-muted small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3">Cancer Module</th>
+                            <th>AI Detection Result</th>
+                            <th>Confidence</th>
+                            <th>Clinical Risk</th>
+                            <th>Date Analyzed</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in recent_predictions %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.2rem;">
+                                        {% if 'brain' in (prediction.cancer_type or '') %}🧠
+                                        {% elif 'lung' in (prediction.cancer_type or '') %}🫁
+                                        {% elif 'skin' in (prediction.cancer_type or '') %}🔬
+                                        {% else %}🏥{% endif %}
+                                    </span>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ (prediction.cancer_type or 'General') | replace('_', ' ') | title }}</div>
+                                        <div class="text-muted small">{{ prediction.model_version or 'Deep Learning' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% set label = prediction.additional_data.get('label', prediction.prediction_result) if prediction.additional_data else prediction.prediction_result %}
+                                <span class="badge rounded-pill px-3 py-2 fw-semibold {% if prediction.prediction_result in ['tumor', 'malignant', 'melanoma'] or (prediction.additional_data and prediction.additional_data.get('is_malignant')) %}bg-danger-subtle text-danger{% else %}bg-success-subtle text-success{% endif %}">
+                                    {{ (label or prediction.prediction_result) | replace('_', ' ') | title }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ "%.1f"|format(prediction.confidence_score * 100) }}%</div>
+                                <div class="progress mt-1" style="height: 4px; width: 80px;">
+                                    <div class="progress-bar bg-danger" style="width: {{ prediction.confidence_score * 100 }}%"></div>
+                                </div>
+                            </td>
+                            <td>
+                                {% set risk = (prediction.risk_level or '')|lower %}
+                                {% if risk == 'high' %}
+                                    <span class="badge bg-danger rounded-pill px-2 py-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>High Risk</span>
+                                {% elif risk == 'medium' %}
+                                    <span class="badge bg-warning text-dark rounded-pill px-2 py-1">Moderate Risk</span>
+                                {% else %}
+                                    <span class="badge bg-success rounded-pill px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>Low Risk</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small">{{ prediction.prediction_date.strftime('%d %b %Y, %I:%M %p') }}</td>
+                            <td class="text-end pe-4">
+                                <div class="btn-group">
+                                    <a href="{{ url_for('dashboard.analysis_result', image_id=prediction.medical_image_id) }}" class="btn btn-sm btn-outline-dark rounded-pill px-3 me-1">
+                                        View
+                                    </a>
+                                    <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                        PDF
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="rounded-circle mx-auto p-3 mb-3 d-flex align-items-center justify-content-center text-muted"
+                     style="background: #F8FAFC; width: 64px; height: 64px; font-size: 1.8rem;">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h6 class="fw-bold text-dark">No diagnostic screenings on file yet</h6>
+                <p class="text-muted small mb-3">Begin by uploading a radiological scan (Brain MRI, Lung CT, or Skin lesion photograph).</p>
+                <a href="{{ url_for('dashboard.upload_image') }}" class="btn btn-hospital-red btn-sm">
+                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload First Scan
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<style>
+.hover-scale {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-scale:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 25px rgba(225, 29, 72, 0.1) !important;
+}
+</style>
 {% endblock %}

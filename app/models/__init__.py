@@ -3,6 +3,14 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+# Export all models for easy importing
+__all__ = [
+    'User', 'Patient', 'Doctor', 'Admin',
+    'ClinicalData', 'MedicalImage', 'PredictionHistory',
+    'Report', 'DoctorNote', 'Appointment', 'ChatMessage',
+    'Notification'
+]
+
 # ==================== BASE USER MODEL ====================
 class User(db.Model, UserMixin):
     """
@@ -121,6 +129,19 @@ class Doctor(User):
     
     def __repr__(self):
         return f'<Dr. {self.full_name} - {self.specialization}>'
+
+# ==================== ADMIN MODEL ====================
+class Admin(User):
+    """
+    Admin model extending User via single-table inheritance.
+    Admins live solely in the 'users' table (no separate table needed).
+    """
+    __mapper_args__ = {
+        'polymorphic_identity': 'admin'
+    }
+
+    def __repr__(self):
+        return f'<Admin {self.username}>'
 
 # ==================== CLINICAL DATA MODEL ====================
 class ClinicalData(db.Model):
@@ -312,3 +333,57 @@ class Appointment(db.Model):
 
     def __repr__(self):
         return f'<Appointment {self.id} - {self.status}>'
+
+# ==================== CHAT MESSAGE MODEL ====================
+class ChatMessage(db.Model):
+    """
+    Model for storing chatbot conversation history.
+    Maintains chat logs with retention policy for privacy.
+    """
+    __tablename__ = 'chat_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
+    session_id = db.Column(db.String(100), nullable=True, index=True)
+    query = db.Column(db.Text, nullable=False)
+    response = db.Column(db.Text, nullable=False)
+    sources = db.Column(db.JSON)  # Array of source citations
+    citations = db.Column(db.Text)  # Formatted citation string
+    is_cancer_related = db.Column(db.Boolean, default=True)
+    has_sources = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    # Relationship
+    user = db.relationship('User', backref='chat_messages', lazy=True)
+
+    def __repr__(self):
+        return f'<ChatMessage {self.id} - User {self.user_id}>'
+
+
+# ==================== NOTIFICATION MODEL ====================
+class Notification(db.Model):
+    """
+    Model for storing in-app notifications for users.
+    Supports different notification types and read status tracking.
+    """
+    __tablename__ = 'notifications'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    title = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    notification_type = db.Column(db.String(20), default='info')  # alert, info, success, warning
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Optional link to related content
+    prediction_id = db.Column(db.Integer, db.ForeignKey('prediction_history.id'), nullable=True)
+    appointment_id = db.Column(db.Integer, db.ForeignKey('appointments.id'), nullable=True)
+    
+    # Relationships
+    user = db.relationship('User', backref='notifications', lazy=True)
+    prediction = db.relationship('PredictionHistory', backref='notifications', lazy=True)
+    appointment = db.relationship('Appointment', backref='notifications', lazy=True)
+
+    def __repr__(self):
+        return f'<Notification {self.id} - {self.title}>'

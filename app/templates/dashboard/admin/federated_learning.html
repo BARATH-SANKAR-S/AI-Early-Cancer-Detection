@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Federated Learning Dashboard - AI Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Federated Learning Dashboard</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">🌐 Federated Learning Dashboard</h2>
+            <p class="text-muted">Privacy-preserving AI model training across multiple hospitals</p>
+        </div>
+    </div>
+
+    <!-- Training Progress Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Current Round</h5>
+                    <div class="display-4 fw-bold text-primary">{{ summary.progress.current_round }}/{{ summary.progress.total_rounds }}</div>
+                    <small class="text-muted">{{ "%.1f"|format(summary.progress.completion_percentage) }}% Complete</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Global Accuracy</h5>
+                    <div class="display-4 fw-bold text-success">{{ "%.1f"|format(summary.round_statistics.current_global_accuracy * 100) }}%</div>
+                    <small class="text-muted">Best: {{ "%.1f"|format(summary.progress.best_accuracy * 100) }}%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Privacy Budget</h5>
+                    <div class="display-4 fw-bold text-warning">{{ "%.2f"|format(summary.privacy_status.privacy_budget_remaining) }}</div>
+                    <small class="text-muted">{{ summary.privacy_status.privacy_status|title }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Data Samples</h5>
+                    <div class="display-4 fw-bold text-info">{{ summary.progress.total_data_samples }}</div>
+                    <small class="text-muted">Across {{ summary.hospital_statistics|length }} hospitals</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Convergence Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📈 Convergence Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Model Performance</h6>
+                            <p><strong>Current Accuracy:</strong> {{ "%.2f"|format(summary.round_statistics.current_global_accuracy * 100) }}%</p>
+                            <p><strong>Target Accuracy:</strong> {{ "%.2f"|format(summary.convergence_status.target_accuracy * 100) }}%</p>
+                            <p><strong>Convergence Rate:</strong> {{ "%.4f"|format(summary.progress.convergence_rate) }}</p>
+                            <p><strong>Accuracy Trend:</strong> 
+                                {% if summary.convergence_status.accuracy_trend == 'improving' %}
+                                <span class="badge bg-success">Improving ↑</span>
+                                {% elif summary.convergence_status.accuracy_trend == 'degrading' %}
+                                <span class="badge bg-danger">Degrading ↓</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Stable →</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Convergence Status</h6>
+                            <p class="lead">
+                                {% if summary.convergence_status.is_converged %}
+                                <span class="badge bg-success">Converged</span>
+                                {% else %}
+                                <span class="badge bg-warning">Training in Progress</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Model Version:</strong> {{ summary.round_statistics.current_model_version }}</p>
+                            <p><strong>Rounds Completed:</strong> {{ summary.round_statistics.total_rounds_completed }}</p>
+                            <p><strong>Avg Participants/Round:</strong> {{ "%.1f"|format(summary.round_statistics.average_participants_per_round) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hospital Participation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🏥 Hospital Participation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Hospital</th>
+                                    <th>Role</th>
+                                    <th>Data Size</th>
+                                    <th>Local Accuracy</th>
+                                    <th>Contribution Weight</th>
+                                    <th>Privacy Level</th>
+                                    <th>Last Sync</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for hospital in summary.hospital_statistics %}
+                                <tr>
+                                    <td><strong>{{ hospital.hospital_name }}</strong></td>
+                                    <td>
+                                        {% if hospital.role == 'participant' %}
+                                        <span class="badge bg-primary">Participant</span>
+                                        {% elif hospital.role == 'observer' %}
+                                        <span class="badge bg-info">Observer</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">{{ hospital.role|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ hospital.data_size }}</td>
+                                    <td>{{ "%.1f"|format(hospital.local_model_accuracy * 100) }}%</td>
+                                    <td>{{ "%.2f"|format(hospital.contribution_weight) }}</td>
+                                    <td>
+                                        {% if hospital.privacy_level == 'high' %}
+                                        <span class="badge bg-success">High</span>
+                                        {% elif hospital.privacy_level == 'medium' %}
+                                        <span class="badge bg-warning">Medium</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ hospital.last_sync[:19] if hospital.last_sync else 'Never' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Progress Chart -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Training Progress</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="trainingProgressChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Budget Chart -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🔒 Privacy Budget Usage</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="privacyBudgetChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Hospital Contribution Weights</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="contributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <button onclick="runFederatedRound()" class="btn btn-success" id="runRoundBtn">
+                    🚀 Run Federated Round
+                </button>
+                <button onclick="exportFederatedData()" class="btn btn-primary">
+                    📥 Export Data
+                </button>
+                <button onclick="refreshDashboard()" class="btn btn-secondary">
+                    🔄 Refresh
+                </button>
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                    ← Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Training Progress Chart
+const progressCtx = document.getElementById('trainingProgressChart').getContext('2d');
+const progressData = {
+    labels: ['Initial', 'Current', 'Target'],
+    datasets: [{
+        label: 'Model Accuracy',
+        data: [0.70, {{ summary.round_statistics.current_global_accuracy }}, {{ summary.convergence_status.target_accuracy }}],
+        backgroundColor: ['#6b7280', '#10b981', '#3b82f6'],
+        borderColor: ['#6b7280', '#10b981', '#3b82f6'],
+        borderWidth: 2
+    }]
+};
+
+new Chart(progressCtx, {
+    type: 'bar',
+    data: progressData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 1.0,
+                ticks: {
+                    callback: function(value) {
+                        return (value * 100) + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Privacy Budget Chart
+const privacyCtx = document.getElementById('privacyBudgetChart').getContext('2d');
+const privacyData = {
+    labels: ['Remaining', 'Used'],
+    datasets: [{
+        data: [{{ summary.privacy_status.privacy_budget_remaining }}, {{ summary.privacy_status.privacy_budget_used }}],
+        backgroundColor: ['#10b981', '#ef4444'],
+        borderWidth: 0
+    }]
+};
+
+new Chart(privacyCtx, {
+    type: 'doughnut',
+    data: privacyData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Hospital Contribution Chart
+const contributionCtx = document.getElementById('contributionChart').getContext('2d');
+const hospitalNames = [];
+const contributionWeights = [];
+
+{% for hospital in summary.hospital_statistics %}
+hospitalNames.push('{{ hospital.hospital_name }}');
+contributionWeights.push({{ hospital.contribution_weight }});
+{% endfor %}
+
+new Chart(contributionCtx, {
+    type: 'pie',
+    data: {
+        labels: hospitalNames,
+        datasets: [{
+            data: contributionWeights,
+            backgroundColor: [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+function runFederatedRound() {
+    const btn = document.getElementById('runRoundBtn');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Running...';
+    
+    fetch('/admin/federated-learning/run-round', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Round ${data.round_result.round_number} completed successfully!\nGlobal Accuracy: ${(data.round_result.global_model_accuracy * 100).toFixed(1)}%`);
+            location.reload();
+        } else {
+            alert('Error running federated round: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Error: ' + error);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Run Federated Round';
+    });
+}
+
+function exportFederatedData() {
+    fetch('/api/admin/federated-learning/export')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const content = JSON.stringify(data.data, null, 2);
+                const blob = new Blob([content], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'federated_learning_data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        })
+        .catch(error => console.error('Export failed:', error));
+}
+
+function refreshDashboard() {
+    location.reload();
+}
+</script>
+
+<style>
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge {
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

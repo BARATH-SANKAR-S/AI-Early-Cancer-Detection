@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}Multi-Modal Fusion Analysis - AI Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.patient_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.patient_history') }}">History</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.analysis_result', image_id=prediction.medical_image_id) }}">Analysis Result</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Fusion Analysis</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">🧬 Multi-Modal Fusion Analysis</h2>
+            <p class="text-muted">Combined diagnostic analysis from multiple modalities</p>
+        </div>
+    </div>
+
+    {% if fusion_result %}
+    <!-- Fusion Score Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Fusion Score</h5>
+                    <div class="display-4 fw-bold" style="color: {{ fusion_result.visual_breakdown.fusion_score.color }}">
+                        {{ fusion_result.visual_breakdown.fusion_score.percentage }}%
+                    </div>
+                    <span class="badge badge-{{ fusion_result.overall_risk_level }} badge-lg">
+                        {{ fusion_result.overall_risk_level|upper }} RISK
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Dominant Modality</h5>
+                    <p class="card-text">
+                        <strong>{{ fusion_result.dominant_modality|title }}</strong>
+                    </p>
+                    <small class="text-muted">Primary diagnostic driver</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Confidence Interval</h5>
+                    <p class="card-text">
+                        {{ (fusion_result.confidence_interval[0] * 100)|round(1) }}% - {{ (fusion_result.confidence_interval[1] * 100)|round(1) }}%
+                    </p>
+                    <small class="text-muted">95% confidence range</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical Insight -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">💡 Clinical Insight</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ fusion_result.clinical_insight }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modality Contributions Chart -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Modality Contributions</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="modalityChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🎯 Risk Level Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskGauge" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Modality Breakdown -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🔍 Detailed Modality Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Modality</th>
+                                    <th>Confidence</th>
+                                    <th>Prediction</th>
+                                    <th>Contribution</th>
+                                    <th>Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for score in modality_scores %}
+                                <tr>
+                                    <td>
+                                        <span class="badge" style="background-color: {{ fusion_result.visual_breakdown.modality_contributions[loop.index0].color }}">
+                                            {{ score.modality.value|title }}
+                                        </span>
+                                    </td>
+                                    <td>{{ (score.confidence * 100)|round(1) }}%</td>
+                                    <td>{{ score.prediction|title }}</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ fusion_result.visual_breakdown.modality_contributions[loop.index0].percentage }}%; background-color: {{ fusion_result.visual_breakdown.modality_contributions[loop.index0].color }}"
+                                                 aria-valuenow="{{ fusion_result.visual_breakdown.modality_contributions[loop.index0].percentage }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ fusion_result.visual_breakdown.modality_contributions[loop.index0].percentage }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ (score.weight * 100)|round(1) }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Original Prediction Info -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📋 Original Prediction Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Cancer Type:</strong> {{ prediction.cancer_type|title }}</p>
+                            <p><strong>Prediction Result:</strong> {{ prediction.prediction_result|title }}</p>
+                            <p><strong>Confidence Score:</strong> {{ (prediction.confidence_score * 100)|round(1) }}%</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Risk Level:</strong> {{ prediction.effective_risk_level|title }}</p>
+                            <p><strong>Prediction Date:</strong> {{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <p><strong>Model Version:</strong> {{ prediction.model_version or 'N/A' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="{{ url_for('dashboard.analysis_result', image_id=prediction.medical_image_id) }}" class="btn btn-secondary">
+                    ← Back to Analysis Result
+                </a>
+                <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-outline-secondary">
+                    View Full History
+                </a>
+                {% if prediction %}
+                <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-primary">
+                    📄 Generate PDF Report
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning">
+        <h5>⚠️ Insufficient Data for Fusion Analysis</h5>
+        <p>Multi-modal fusion analysis requires at least one diagnostic modality. 
+           Currently available modalities: {{ modality_scores|length }}</p>
+        <a href="{{ url_for('dashboard.analysis_result', image_id=prediction.medical_image_id) }}" class="btn btn-secondary">
+            ← Back to Analysis Result
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+{% if fusion_result %}
+// Modality Contributions Chart
+const modalityCtx = document.getElementById('modalityChart').getContext('2d');
+const modalityLabels = [];
+const modalityData = [];
+const modalityColors = [];
+
+{% for contribution in fusion_result.visual_breakdown.modality_contributions %}
+modalityLabels.push('{{ contribution.modality|title }}');
+modalityData.push({{ contribution.contribution }});
+modalityColors.push('{{ contribution.color }}');
+{% endfor %}
+
+new Chart(modalityCtx, {
+    type: 'doughnut',
+    data: {
+        labels: modalityLabels,
+        datasets: [{
+            label: 'Contribution Score',
+            data: modalityData,
+            backgroundColor: modalityColors,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': ' + (context.raw * 100).toFixed(1) + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Risk Gauge Chart
+const riskCtx = document.getElementById('riskGauge').getContext('2d');
+const currentScore = {{ fusion_result.fusion_score }};
+
+new Chart(riskCtx, {
+    type: 'bar',
+    data: {
+        labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+        datasets: [{
+            label: 'Risk Thresholds',
+            data: [0.35, 0.70, 1.0],
+            backgroundColor: ['#10b981', '#f59e0b', '#dc2626'],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                max: 1.0,
+                ticks: {
+                    callback: function(value) {
+                        return (value * 100) + '%';
+                    }
+                }
+            }
+        },
+        plugins: {
+            afterDraw: function(chart) {
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                
+                const xPos = xAxis.getPixelForValue(currentScore);
+                const yPos = yAxis.bottom;
+                
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(xPos, yAxis.top);
+                ctx.lineTo(xPos, yAxis.bottom);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgb(255, 99, 132)';
+                ctx.stroke();
+                
+                ctx.fillStyle = 'rgb(255, 99, 132)';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Current: {{ (fusion_result.fusion_score * 100)|round(1) }}%', xPos, yAxis.top - 10);
+                ctx.restore();
+            }
+        }
+    }
+});
+{% endif %}
+</script>
+
+<style>
+.badge-lg {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+}
+
+.badge-low {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-medium {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.badge-high {
+    background-color: #dc2626;
+    color: white;
+}
+</style>
+{% endblock %}

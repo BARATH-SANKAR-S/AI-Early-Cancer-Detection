@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Annotation - AI Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_dashboard') }}">Doctor Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.doctor_patients') }}">Patients</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Annotation</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">👨‍⚕️ Doctor Annotation Interface</h2>
+            <p class="text-muted">Review AI prediction and provide your expert feedback</p>
+        </div>
+    </div>
+
+    <!-- AI Prediction Details -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🤖 AI Prediction Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Prediction ID:</strong> {{ prediction.id }}</p>
+                            <p><strong>Cancer Type:</strong> {{ prediction.cancer_type|title }}</p>
+                            <p><strong>Prediction Result:</strong> {{ prediction.prediction_result|title }}</p>
+                            <p><strong>Confidence Score:</strong> {{ (prediction.confidence_score * 100)|round(1) }}%</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Risk Level:</strong> {{ prediction.effective_risk_level|title }}</p>
+                            <p><strong>Prediction Date:</strong> {{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <p><strong>Model Version:</strong> {{ prediction.model_version or 'N/A' }}</p>
+                            <p><strong>Patient ID:</strong> {{ prediction.patient_id }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annotation Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">📝 Your Annotation</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('dashboard.doctor_annotation', prediction_id=prediction.id) }}">
+                        <div class="mb-3">
+                            <label for="annotation_type" class="form-label">Annotation Type</label>
+                            <select class="form-select" id="annotation_type" name="annotation_type" required>
+                                <option value="">Select annotation type...</option>
+                                <option value="confirmation">✅ Confirm AI Prediction</option>
+                                <option value="correction">🔄 Correct AI Prediction</option>
+                                <option value="uncertain">❓ Uncertain</option>
+                                <option value="rescan">🔍 Request Rescan</option>
+                                <option value="clinical_note">📋 Clinical Note Only</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="correction_field" style="display: none;">
+                            <label for="corrected_label" class="form-label">Corrected Label</label>
+                            <input type="text" class="form-control" id="corrected_label" name="corrected_label" placeholder="Enter corrected diagnosis">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confidence_level" class="form-label">Your Confidence Level</label>
+                            <select class="form-select" id="confidence_level" name="confidence_level" required>
+                                <option value="high">High Confidence</option>
+                                <option value="medium" selected>Medium Confidence</option>
+                                <option value="low">Low Confidence</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="clinical_notes" class="form-label">Clinical Notes</label>
+                            <textarea class="form-control" id="clinical_notes" name="clinical_notes" rows="4" 
+                                      placeholder="Provide your clinical observations and reasoning..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="high_priority" name="high_priority">
+                                <label class="form-check-label" for="high_priority">
+                                    Mark as high priority for model retraining
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                💾 Save Annotation
+                            </button>
+                            <a href="{{ url_for('dashboard.doctor_patients') }}" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Learning Info -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🧠 Active Learning Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>Your annotation will be used to improve the AI model through active learning:</p>
+                    <ul>
+                        <li><strong>Corrections</strong> help the model learn from its mistakes</li>
+                        <li><strong>Confirmations</strong> validate correct predictions</li>
+                        <li><strong>High-confidence annotations</strong> carry more weight in model training</li>
+                        <li><strong>Clinical notes</strong> provide context for future improvements</li>
+                    </ul>
+                    <p class="text-muted mb-0">Your expert feedback is invaluable for continuous model improvement.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Show/hide correction field based on annotation type
+document.getElementById('annotation_type').addEventListener('change', function() {
+    const correctionField = document.getElementById('correction_field');
+    if (this.value === 'correction') {
+        correctionField.style.display = 'block';
+        document.getElementById('corrected_label').required = true;
+    } else {
+        correctionField.style.display = 'none';
+        document.getElementById('corrected_label').required = false;
+    }
+});
+</script>
+{% endblock %}

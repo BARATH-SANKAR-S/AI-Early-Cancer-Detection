@@ -1,0 +1,446 @@
+{% extends "base.html" %}
+
+{% block title %}Erode District Cancer Risk Heatmap - AI Cancer Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard.patient_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Geographic Risk Analysis</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">🗺️ Erode District Cancer Risk Heatmap</h2>
+            <p class="text-muted">Regional cancer risk analysis and statistics for Erode district</p>
+        </div>
+    </div>
+
+    <!-- Overall Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Predictions</h5>
+                    <div class="display-4 fw-bold text-primary">{{ heatmap_data.overall_stats.total_predictions }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">High Risk</h5>
+                    <div class="display-4 fw-bold text-danger">{{ heatmap_data.overall_stats.total_high_risk }}</div>
+                    <small class="text-muted">{{ "%.1f"|format(heatmap_data.overall_stats.high_risk_percentage) }}%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Medium Risk</h5>
+                    <div class="display-4 fw-bold text-warning">{{ heatmap_data.overall_stats.total_medium_risk }}</div>
+                    <small class="text-muted">{{ "%.1f"|format(heatmap_data.overall_stats.medium_risk_percentage) }}%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Low Risk</h5>
+                    <div class="display-4 fw-bold text-success">{{ heatmap_data.overall_stats.total_low_risk }}</div>
+                    <small class="text-muted">{{ "%.1f"|format(heatmap_data.overall_stats.low_risk_percentage) }}%</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Heatmap -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🌡️ Regional Risk Heatmap</h5>
+                </div>
+                <div class="card-body">
+                    <div id="heatmap-container" style="height: 500px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regional Statistics Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📊 Regional Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Region</th>
+                                    <th>Total Predictions</th>
+                                    <th>High Risk</th>
+                                    <th>Medium Risk</th>
+                                    <th>Low Risk</th>
+                                    <th>Avg Confidence</th>
+                                    <th>Risk Score</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for region in heatmap_data.regions %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ region.name }}</strong>
+                                        {% if region.name == patient_region %}
+                                        <span class="badge badge-info">Your Region</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ region.total_predictions }}</td>
+                                    <td>{{ region.high_risk_count }}</td>
+                                    <td>{{ region.medium_risk_count }}</td>
+                                    <td>{{ region.low_risk_count }}</td>
+                                    <td>{{ "%.1f"|format(region.avg_confidence * 100) }}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ region.risk_score * 100 }}%;"
+                                                 class="{% if region.risk_score >= 0.85 %}bg-danger{% elif region.risk_score >= 0.70 %}bg-warning{% elif region.risk_score >= 0.35 %}bg-warning{% else %}bg-success{% endif %}"
+                                                 aria-valuenow="{{ region.risk_score * 100 }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ "%.1f"|format(region.risk_score * 100) }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if region.trend_direction == 'increasing' %}
+                                        <span class="badge badge-danger">↑ Increasing</span>
+                                        {% elif region.trend_direction == 'decreasing' %}
+                                        <span class="badge badge-success">↓ Decreasing</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">→ Stable</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient's Regional Analysis -->
+    {% if regional_stats %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📍 Your Regional Analysis: {{ patient_region }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Regional Statistics</h6>
+                            <ul>
+                                <li>Total Predictions: {{ regional_stats.total_predictions }}</li>
+                                <li>High Risk Cases: {{ regional_stats.high_risk_count }}</li>
+                                <li>Medium Risk Cases: {{ regional_stats.medium_risk_count }}</li>
+                                <li>Low Risk Cases: {{ regional_stats.low_risk_count }}</li>
+                                <li>Average Confidence: {{ "%.1f"|format(regional_stats.avg_confidence * 100) }}%</li>
+                                <li>Most Common Cancer Type: {{ regional_stats.most_common_cancer_type|title }}</li>
+                                <li>Trend Direction: {{ regional_stats.trend_direction|title }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Regional Recommendations</h6>
+                            <ul>
+                                {% for recommendation in regional_recommendations %}
+                                <li>{{ recommendation }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Temporal Trends -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📈 Monthly Risk Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="temporalChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Factors Analysis -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">🔍 Risk Factors Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Urban Areas</h6>
+                                    <div class="display-6 fw-bold" style="color: #3b82f6;">
+                                        {{ "%.2f"|format(heatmap_data.risk_factors.urban_areas.avg_risk_score) }}
+                                    </div>
+                                    <small class="text-muted">Average Risk Score</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Rural Areas</h6>
+                                    <div class="display-6 fw-bold" style="color: #10b981;">
+                                        {{ "%.2f"|format(heatmap_data.risk_factors.rural_areas.avg_risk_score) }}
+                                    </div>
+                                    <small class="text-muted">Average Risk Score</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h6 class="card-title">Industrial Areas</h6>
+                                    <div class="display-6 fw-bold" style="color: #f59e0b;">
+                                        {{ "%.2f"|format(heatmap_data.risk_factors.industrial_areas.avg_risk_score) }}
+                                    </div>
+                                    <small class="text-muted">Average Risk Score</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a href="{{ url_for('dashboard.patient_dashboard') }}" class="btn btn-secondary">
+                    ← Back to Dashboard
+                </a>
+                <a href="{{ url_for('dashboard.patient_history') }}" class="btn btn-outline-secondary">
+                    View My History
+                </a>
+                <button onclick="exportData('json')" class="btn btn-primary">
+                    📥 Export JSON
+                </button>
+                <button onclick="exportData('csv')" class="btn btn-primary">
+                    📥 Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+
+<script>
+// Temporal Trends Chart
+const temporalCtx = document.getElementById('temporalChart').getContext('2d');
+const temporalLabels = [];
+const temporalTotalPredictions = [];
+const temporalHighRisk = [];
+
+{% for data in heatmap_data.temporal_data %}
+temporalLabels.push('{{ data.month }}');
+temporalTotalPredictions.push({{ data.total_predictions }});
+temporalHighRisk.push({{ data.high_risk_count }});
+{% endfor %}
+
+new Chart(temporalCtx, {
+    type: 'line',
+    data: {
+        labels: temporalLabels,
+        datasets: [{
+            label: 'Total Predictions',
+            data: temporalTotalPredictions,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4
+        }, {
+            label: 'High Risk Cases',
+            data: temporalHighRisk,
+            borderColor: '#dc2626',
+            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Simple heatmap visualization using colored blocks
+function renderHeatmap() {
+    const container = document.getElementById('heatmap-container');
+    const regions = [
+        {% for region in heatmap_data.regions %}
+        {
+            name: '{{ region.name }}',
+            riskScore: {{ region.risk_score }},
+            totalPredictions: {{ region.total_predictions }},
+            trend: '{{ region.trend_direction }}'
+        },
+        {% endfor %}
+    ];
+    
+    // Create a grid layout for regions
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+    grid.style.gap = '16px';
+    grid.style.padding = '16px';
+    
+    regions.forEach(region => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.cursor = 'pointer';
+        card.style.transition = 'transform 0.2s';
+        
+        const riskColor = getRiskColor(region.riskScore);
+        card.style.borderTop = `4px solid ${riskColor}`;
+        
+        card.innerHTML = `
+            <div class="card-body">
+                <h6 class="card-title">${region.name}</h6>
+                <div class="display-6 fw-bold" style="color: ${riskColor}">
+                    ${(region.riskScore * 100).toFixed(1)}%
+                </div>
+                <small class="text-muted">Risk Score</small>
+                <div class="mt-2">
+                    <small>Total: ${region.totalPredictions}</small>
+                    ${region.trend === 'increasing' ? '<span class="badge badge-danger ml-1">↑</span>' : 
+                      region.trend === 'decreasing' ? '<span class="badge badge-success ml-1">↓</span>' : 
+                      '<span class="badge badge-secondary ml-1">→</span>'}
+                </div>
+            </div>
+        `;
+        
+        card.onmouseover = () => card.style.transform = 'scale(1.05)';
+        card.onmouseout = () => card.style.transform = 'scale(1)';
+        
+        grid.appendChild(card);
+    });
+    
+    container.appendChild(grid);
+}
+
+function getRiskColor(score) {
+    if (score >= 0.85) return '#dc2626'; // Critical
+    if (score >= 0.70) return '#f59e0b'; // High
+    if (score >= 0.35) return '#fbbf24'; // Medium
+    return '#10b981'; // Low
+}
+
+function exportData(format) {
+    const url = `/api/geographic/heatmap-data`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let content, filename, type;
+                
+                if (format === 'json') {
+                    content = JSON.stringify(data.data, null, 2);
+                    filename = 'erode_cancer_risk_data.json';
+                    type = 'application/json';
+                } else {
+                    // CSV format
+                    const headers = ['Region,Total Predictions,High Risk,Medium Risk,Low Risk,Avg Confidence,Risk Score'];
+                    const rows = data.data.regions.map(r => 
+                        `${r.name},${r.total_predictions},${r.high_risk_count},${r.medium_risk_count},${r.low_risk_count},${r.avg_confidence.toFixed(2)},${r.risk_score.toFixed(2)}`
+                    );
+                    content = [...headers, ...rows].join('\n');
+                    filename = 'erode_cancer_risk_data.csv';
+                    type = 'text/csv';
+                }
+                
+                const blob = new Blob([content], { type });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        })
+        .catch(error => console.error('Export failed:', error));
+}
+
+// Initialize heatmap on page load
+document.addEventListener('DOMContentLoaded', renderHeatmap);
+</script>
+
+<style>
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge-info {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.badge-danger {
+    background-color: #dc2626;
+    color: white;
+}
+
+.badge-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge-secondary {
+    background-color: #6b7280;
+    color: white;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+</style>
+{% endblock %}

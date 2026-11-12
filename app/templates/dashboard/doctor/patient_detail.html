@@ -81,62 +81,110 @@
                 <div class="card-body">
                     {% if predictions %}
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
+                                    <th class="ps-3 py-3" style="width: 150px;">Date & Time</th>
+                                    <th style="width: 110px;">Type</th>
                                     <th>AI Predicted Class</th>
-                                    <th>Model Confidence</th>
-                                    <th>Risk Level</th>
-                                    <th>Review Status</th>
-                                    <th>Actions</th>
+                                    <th style="width: 130px;">Confidence</th>
+                                    <th style="width: 110px;">Risk Level</th>
+                                    <th style="width: 130px;">Review Status</th>
+                                    <th class="text-end pe-3" style="width: 190px;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for prediction in predictions %}
+                                {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
                                 <tr>
-                                    <td><small>{{ prediction.prediction_date.strftime('%Y-%m-%d %H:%M') }}</small></td>
-                                    <td><span class="badge bg-info">{{ prediction.cancer_type|capitalize }}</span></td>
+                                    <!-- Date -->
+                                    <td class="ps-3">
+                                        <span class="fw-semibold text-dark d-block">
+                                            {{ prediction.prediction_date.strftime('%Y-%m-%d') if prediction.prediction_date else 'N/A' }}
+                                        </span>
+                                        <span class="text-muted small">
+                                            {{ prediction.prediction_date.strftime('%H:%M') if prediction.prediction_date else '' }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Cancer Type -->
                                     <td>
-                                        <span class="badge bg-{{ 'danger' if prediction.prediction_result == 'malignant' or (prediction.additional_data and prediction.additional_data.get('is_malignant')) else 'success' }}">
+                                        {% set ct = prediction.cancer_type %}
+                                        {% if ct == 'brain_tumor' %}
+                                            <span class="badge rounded-pill px-2 py-1" style="background:#F3E8FF; color:#7C3AED;">🧠 Brain</span>
+                                        {% elif ct == 'lung_cancer' %}
+                                            <span class="badge rounded-pill px-2 py-1" style="background:#E0F2FE; color:#0369A1;">🫁 Lung</span>
+                                        {% elif ct == 'skin_cancer' %}
+                                            <span class="badge rounded-pill px-2 py-1" style="background:#FEF3C7; color:#B45309;">🔬 Skin</span>
+                                        {% else %}
+                                            <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2 py-1">{{ ct|capitalize }}</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- AI Class -->
+                                    <td>
+                                        <span class="fw-bold text-dark d-block">
                                             {{ prediction.additional_data.get('label', prediction.prediction_result)|capitalize if prediction.additional_data else prediction.prediction_result|capitalize }}
                                         </span>
                                     </td>
-                                    <td>{{ "%.2f"|format(prediction.confidence_score * 100) }}%</td>
+
+                                    <!-- Model Confidence -->
                                     <td>
-                                        {% set risk = (prediction.risk_level or (prediction.additional_data.get('risk_level') if prediction.additional_data else '') or prediction.effective_risk_level)|lower %}
+                                        <div class="fw-bold text-dark">{{ "%.1f"|format(prediction.confidence_score * 100) }}%</div>
+                                        <div class="progress mt-1" style="height: 5px; width: 85px;">
+                                            <div class="progress-bar {% if risk == 'high' %}bg-danger{% elif risk == 'medium' %}bg-warning{% else %}bg-success{% endif %}"
+                                                 style="width: {{ prediction.confidence_score * 100 }}%"></div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Risk Level -->
+                                    <td>
                                         {% if risk == 'high' %}
-                                            <span class="badge bg-danger">⚠ High</span>
+                                            <span class="badge bg-danger rounded-pill px-2 py-1">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>High
+                                            </span>
                                         {% elif risk == 'medium' %}
-                                            <span class="badge bg-warning text-dark">◑ Medium</span>
+                                            <span class="badge bg-warning text-dark rounded-pill px-2 py-1">
+                                                <i class="bi bi-dash-circle-fill me-1"></i>Medium
+                                            </span>
                                         {% elif risk == 'low' %}
-                                            <span class="badge bg-success">✓ Low</span>
+                                            <span class="badge bg-success rounded-pill px-2 py-1">
+                                                <i class="bi bi-check-circle-fill me-1"></i>Low
+                                            </span>
                                         {% else %}
                                             <span class="text-muted">—</span>
                                         {% endif %}
                                     </td>
+
+                                    <!-- Review Status -->
                                     <td>
                                         {% if prediction.doctor_notes %}
                                             {% set latest_note = prediction.doctor_notes[-1] %}
-                                            <span class="badge bg-{{ 'success' if latest_note.status == 'approved' else 'warning text-dark' if latest_note.status == 'rescan' else 'danger' if latest_note.status == 'flagged' else 'secondary' }}">
+                                            <span class="badge rounded-pill px-2 py-1 bg-{{ 'success' if latest_note.status == 'approved' else 'warning text-dark' if latest_note.status == 'rescan' else 'danger' if latest_note.status == 'flagged' else 'secondary' }}">
                                                 {{ latest_note.status|upper }}
                                             </span>
-                                            <small class="text-muted d-block" style="font-size:11px;">Dr. {{ latest_note.doctor.full_name }}</small>
+                                            <small class="text-muted d-block mt-1" style="font-size:11px;">Dr. {{ latest_note.doctor.full_name }}</small>
                                         {% else %}
-                                            <span class="badge bg-secondary">Unreviewed</span>
+                                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2 py-1">Unreviewed</span>
                                         {% endif %}
                                     </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-outline-info me-1" data-bs-toggle="modal" data-bs-target="#probabilitiesModal{{ prediction.id }}" title="View Details">
-                                            <i class="bi bi-pie-chart"></i> Details
-                                        </button>
-                                        <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-sm btn-outline-danger me-1" title="Download Official Medical Report">
-                                            <i class="bi bi-file-earmark-pdf"></i> Report
-                                        </a>
-                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal{{ prediction.id }}" title="Add Clinical Review Note">
-                                            <i class="bi bi-pencil-square"></i> Review
-                                        </button>
+
+                                    <!-- Action Buttons -->
+                                    <td class="text-end pe-3">
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#probabilitiesModal{{ prediction.id }}" title="View Details">
+                                                <i class="bi bi-pie-chart"></i>
+                                            </button>
+                                            <a href="{{ url_for('dashboard.download_report', prediction_id=prediction.id) }}" class="btn btn-outline-danger" title="Download PDF Report">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                            </a>
+                                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal{{ prediction.id }}" title="Add Clinical Note">
+                                                <i class="bi bi-chat-left-text"></i>
+                                            </button>
+                                            <a href="{{ url_for('dashboard.doctor_annotation', prediction_id=prediction.id) }}" class="btn btn-outline-success" title="Active Learning Annotation">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 

@@ -2,7 +2,7 @@ import os
 os.environ.setdefault('KMP_DUPLICATE_LIB_OK', 'TRUE')
 
 from app import create_app, db
-from app.models import User, Patient, Doctor, ClinicalData, MedicalImage, PredictionHistory, Report
+from app.models import User, Patient, Doctor, Admin, ClinicalData, MedicalImage, PredictionHistory, Report
 
 app = create_app(os.getenv('FLASK_CONFIG', 'development'))
 
@@ -27,4 +27,4 @@ def init_db():
     print('Database initialized successfully!')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)

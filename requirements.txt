@@ -3,9 +3,26 @@ Flask-SQLAlchemy==3.1.1
 Flask-Migrate==4.0.5
 Flask-WTF==1.2.1
 Flask-Login==0.6.3
+Flask-Mail==0.10.0
 WTForms==3.1.1
 email-validator>=2.1.0
 python-dotenv==1.0.0
+
+# Production WSGI Server for Render / Linux
+gunicorn>=21.2.0
+
+# Scientific & Visual Explainability (Anatomical Heatmaps)
+scipy>=1.11.0
+matplotlib>=3.7.0
+
+# Chatbot Dependencies
+langchain>=0.1.0
+langchain-openai>=0.0.5
+langchain-community>=0.0.10
+sentence-transformers>=2.2.0
+chromadb>=0.4.0
+pdfplumber>=0.9.0
+openai>=1.0.0
 numpy>=1.26.0
 pandas>=2.1.0
 torch>=2.0.0
@@ -13,3 +30,17 @@ torchvision>=0.15.0
 transformers>=4.30.0
 torchxrayvision>=0.2.0
 Pillow>=10.0.0
+
+# Notification Dependencies
+twilio>=8.0.0
+
+# Report Generation
+qrcode[pil]>=7.4.0
+reportlab>=4.0.0
+
+# DICOM Support
+pydicom>=2.3.0
+
+# Tamil Language Support
+speechrecognition>=3.10.0
+pyttsx3>=2.90

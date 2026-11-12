@@ -52,11 +52,12 @@ Thumbs.db
 uploads/
 static/uploads/
 
-# AI Models (root level only, but allow vision and ct subdirectories)
-/models/
-!/models/vision/
-!/models/ct/
-*.pth
-*.pt
-*.pkl
-*.h5
+# Uploads
+uploads/
+static/uploads/
+
+# Ignore huge weights >100MB (GitHub blocks files > 100MB)
+models/vision/checkpoints/
+*.db
+*.sqlite
+*.sqlite3
